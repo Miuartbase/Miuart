@@ -1,11 +1,18 @@
 const { Resend } = require('resend');
 
 exports.handler = async (event) => {
-  // Configuración CORS para permitir requests desde Firebase
+  // Configuración CORS mejorada
+  const allowedOrigins = [
+    'https://botigamiuart.web.app',
+    'https://miuart.netlify.app'
+  ];
+  
+  const origin = event.headers.origin;
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
+    'Access-Control-Allow-Headers': 'Content-Type, Origin, Accept',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
+    'Access-Control-Allow-Credentials': 'true'
   };
 
   // Manejar preflight OPTIONS request
@@ -38,11 +45,13 @@ exports.handler = async (event) => {
       };
     }
 
+    // Inicializar Resend con la API Key
     const resend = new Resend(process.env.RESEND_API_KEY);
     
+    // Enviar email
     const { data, error } = await resend.emails.send({
       from: 'MiUArt <onboarding@resend.dev>',
-      to: ['miuartbase@gmail.com'], // ⚠️ TU EMAIL DE ADMIN
+      to: ['miuartbase@gmail.com'], // ⚠️ VERIFICA QUE ESTE ES TU EMAIL
       subject: `📧 Nuevo mensaje de ${nombre} - MiUArt`,
       html: `
         <!DOCTYPE html>
@@ -99,8 +108,7 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({ 
         success: true, 
-        message: 'Email enviado correctamente',
-        data: data 
+        message: 'Email enviado correctamente'
       })
     };
 
