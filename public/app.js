@@ -43,7 +43,7 @@ emailjs.init('UHPbtfKFspMstCYCj');
 /* ---------------------------
    CONFIGURACIÓ NETLIFY + RESEND
    --------------------------- */
-const NETLIFY_FUNCTION_URL = 'https://tu-sitio.netlify.app/.netlify/functions/enviar-contacto';
+const NETLIFY_FUNCTION_URL = '/.netlify/functions/enviar-contacto';
 // ⚠️ REEMPLAÇA amb la teva URL real de Netlify quan la tinguis
 
 /* ---------------------------

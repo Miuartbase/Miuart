@@ -1,0 +1,8 @@
+{
+  "name": "miuart-botiga",
+  "version": "1.0.0",
+  "description": "Tienda online MiUArt",
+  "dependencies": {
+    "resend": "^2.0.0"
+  }
+}
