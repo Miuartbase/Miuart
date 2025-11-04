@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "botigamiuart"
+  },
+  "targets": {
+    "botigamiuart": {
+      "hosting": {
+        "miuart": [
+          "botigamiuart"
+        ]
+      }
+    }
+  }
+}
