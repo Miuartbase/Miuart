@@ -1,30 +1,28 @@
 const { Resend } = require('resend');
 
 exports.handler = async (event) => {
-  // Configuración CORS mejorada
-  const allowedOrigins = [
-    'https://botigamiuart.web.app',
-    'https://miuart.netlify.app'
-  ];
+  console.log('🔧 Función enviar-contacto EJECUTÁNDOSE');
   
-  const origin = event.headers.origin;
+  // CORS COMPLETO - Permitir tu dominio Firebase
   const headers = {
-    'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
+    'Access-Control-Allow-Origin': 'https://botigamiuart.web.app',
     'Access-Control-Allow-Headers': 'Content-Type, Origin, Accept',
     'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-    'Access-Control-Allow-Credentials': 'true'
+    'Access-Control-Allow-Credentials': 'true',
+    'Content-Type': 'application/json'
   };
 
-  // Manejar preflight OPTIONS request
+  // CRÍTICO: Manejar preflight OPTIONS
   if (event.httpMethod === 'OPTIONS') {
+    console.log('✅ Preflight OPTIONS manejado correctamente');
     return {
       statusCode: 200,
       headers,
-      body: ''
+      body: JSON.stringify({ status: 'OK' })
     };
   }
 
-  // Solo permitir POST
+  // Solo POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -34,90 +32,71 @@ exports.handler = async (event) => {
   }
 
   try {
+    console.log('📨 Procesando formulario...');
     const { nombre, email, mensaje } = JSON.parse(event.body);
     
-    // Validar campos requeridos
+    // Validar
     if (!nombre || !email || !mensaje) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'Faltan campos requeridos' })
+        body: JSON.stringify({ error: 'Faltan campos' })
       };
     }
 
-    // Inicializar Resend con la API Key
+    console.log('✅ Datos válidos:', { nombre, email });
+
+    // VERIFICAR API KEY
+    if (!process.env.RESEND_API_KEY) {
+      console.error('❌ RESEND_API_KEY no configurada en Netlify');
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Error de configuración del servidor' })
+      };
+    }
+
+    // Enviar email
     const resend = new Resend(process.env.RESEND_API_KEY);
     
-    // Enviar email
     const { data, error } = await resend.emails.send({
       from: 'MiUArt <onboarding@resend.dev>',
-      to: ['miuartbase@gmail.com'], // ⚠️ VERIFICA QUE ESTE ES TU EMAIL
-      subject: `📧 Nuevo mensaje de ${nombre} - MiUArt`,
+      to: ['miuartbase@gmail.com'],
+      subject: `📧 Mensaje de ${nombre} - MiUArt`,
       html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
-            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-            .header { background: #e9acc8; color: white; padding: 20px; text-align: center; }
-            .content { padding: 25px; }
-            .info-item { margin-bottom: 12px; }
-            .label { font-weight: bold; color: #555; display: inline-block; width: 80px; }
-            .message-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin: 15px 0; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>📧 Nuevo Mensaje de Contacto</h1>
-              <p>Has recibido un nuevo mensaje desde MiUArt</p>
-            </div>
-            <div class="content">
-              <div class="info-item">
-                <span class="label">Nombre:</span> ${nombre}
-              </div>
-              <div class="info-item">
-                <span class="label">Email:</span> ${email}
-              </div>
-              <div class="info-item">
-                <span class="label">Fecha:</span> ${new Date().toLocaleString('es-ES')}
-              </div>
-              <div class="message-box">
-                <strong>Mensaje:</strong><br>
-                ${mensaje.replace(/\n/g, '<br>')}
-              </div>
-            </div>
-          </div>
-        </body>
-        </html>
+        <h2>Nuevo mensaje de contacto</h2>
+        <p><strong>Nombre:</strong> ${nombre}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Mensaje:</strong> ${mensaje}</p>
+        <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
       `
     });
 
     if (error) {
-      console.error('Error Resend:', error);
+      console.error('❌ Error Resend:', error);
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: 'Error al enviar el email: ' + error.message })
+        body: JSON.stringify({ error: error.message })
       };
     }
 
+    console.log('🎉 Email enviado correctamente');
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({ 
         success: true, 
-        message: 'Email enviado correctamente'
+        message: 'Email enviado correctamente' 
       })
     };
 
   } catch (error) {
-    console.error('Error función:', error);
+    console.error('💥 Error en función:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Error interno del servidor: ' + error.message })
+      body: JSON.stringify({ error: error.message })
     };
   }
 };
