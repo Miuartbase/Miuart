@@ -1,7 +1,10 @@
 const { Resend } = require('resend');
 
 exports.handler = async (event) => {
-  console.log('🔧 Función enviar-contacto EJECUTÁNDOSE');
+  console.log('🔍 DEBUG - ¿ESTA ES LA FUNCIÓN CORRECTA?');
+  console.log('🔍 DEBUG - Ruta del archivo: netlify/functions/enviar-contacto.js');
+  console.log('🔍 DEBUG - RESEND_API_KEY existe?:', !!process.env.RESEND_API_KEY);
+  console.log('🔍 DEBUG - Variables disponibles:', Object.keys(process.env).filter(key => key.includes('RESEND')));
   
   // CORS COMPLETO - Permitir tu dominio Firebase y otros
   const allowedOrigins = [
