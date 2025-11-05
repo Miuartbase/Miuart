@@ -8,11 +8,13 @@ exports.handler = async (event) => {
   
   // CORS COMPLETO - Permitir tu dominio Firebase y otros
   const allowedOrigins = [
-    'https://botigamiuart.web.app',
-    'https://miuart.netlify.app',
-    'http://localhost:3000',
-    'http://localhost:5000'
-  ];
+  'https://botigamiuart.web.app',
+  'https://www.botigamiuart.web.app',
+  'https://miuart.netlify.app',
+  'https://miuartclientes.netlify.app',
+  'http://localhost:3000',
+  'http://localhost:5000'
+];
   
   const origin = event.headers.origin || event.headers.Origin;
   const allowedOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
@@ -75,7 +77,7 @@ exports.handler = async (event) => {
     
     const { data, error } = await resend.emails.send({
       from: 'MiUArt <onboarding@resend.dev>',
-      to: ['miuartbase@gmail.com'],
+      to: ['miuartclientes@gmail.com'],
       subject: `📧 Nuevo mensaje de ${nombre} - MiUArt`,
       html: `
         <h2>Nuevo mensaje de contacto</h2>
