@@ -1977,31 +1977,6 @@ async function enviarNotificacionAdmin(comandaData, comandaId) {
       comandaData.cliente.pais
     ].filter(Boolean).join('\n');
 
-   // ✅ Comprovar si el client ha acceptat rebre publicitat
-   const volNewsletter = document.getElementById('newsletterCheck')?.checked;
-
-   // Si ha acceptat, afegim el seu email a Brevo
-   if (volNewsletter && comandaData.cliente.email) {
-     try {
-       await fetch('https://api.brevo.com/v3/contacts', {
-       method: 'POST',
-       headers: {
-         'accept': 'application/json',
-         'api-key': process.env.BREVO_API_KEY, // 👉 substitueix per la teva clau Brevo
-         'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-         email: comandaData.cliente.email,
-         listIds: [3], // 👉 substitueix per l’ID real de la llista a Brevo
-         attributes: { NOMBRE: nombreCliente }
-      })
-    });
-    console.log('✅ Client afegit a la newsletter de Brevo');
-  } catch (error) {
-    console.error('❌ Error afegint client a Brevo:', error);
-  }
-}
-
     // === RESUM DE LA COMANDA ===
     const resumenHTML = `
       <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
