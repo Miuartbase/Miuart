@@ -1977,6 +1977,26 @@ async function enviarNotificacionAdmin(comandaData, comandaId) {
       comandaData.cliente.pais
     ].filter(Boolean).join('\n');
 
+    // ✅ Comprovar si el client ha acceptat rebre publicitat
+    const volNewsletter = document.getElementById('newsletterCheck')?.checked;
+
+    // Si ha acceptat, enviar la petició al servidor (funció Netlify)
+    if (volNewsletter && comandaData.cliente.email) {
+      try {
+        await fetch('https://miuartclientes.netlify.app/.netlify/functions/afegir-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: comandaData.cliente.email,
+          nombre: nombreCliente
+        })
+      });
+      console.log('✅ Petició enviada al servidor per afegir client a Brevo');
+    } catch (error) {
+      console.error('❌ Error enviant dades a Brevo:', error);
+    }
+}
+
     // === RESUM DE LA COMANDA ===
     const resumenHTML = `
       <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
