@@ -1732,7 +1732,7 @@ async function enviarEmailResend(datosContacto) {
     console.log('📤 Enviant email de contacte via Netlify...', datosContacto);
 
     // URL de la teva Netlify Function (REEMPLAÇA amb la teva URL real)
-    const NETLIFY_URL = 'https://miuartclientes.netlify.app/.netlify/functions/enviar-contacto';
+    const NETLIFY_FUNCTION_URL = 'https://miuartclientes.netlify.app/.netlify/functions/enviar-contacto';
 
     const response = await fetch(NETLIFY_FUNCTION_URL, {
       method: 'POST',
@@ -1742,8 +1742,9 @@ async function enviarEmailResend(datosContacto) {
       body: JSON.stringify({
         nombre: datosContacto.nombre,
         email: datosContacto.email,
-        mensaje: datosContacto.mensaje
-      })
+        mensaje: datosContacto.mensaje,
+        volNewsletter: document.getElementById('newsletterCheck')?.checked || false
+})
     });
 
     // Verificar resposta

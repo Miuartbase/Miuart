@@ -1,3 +1,4 @@
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const { Resend } = require('resend');
 
 exports.handler = async (event) => {
@@ -48,7 +49,8 @@ exports.handler = async (event) => {
 
   try {
     console.log('📨 Procesando formulario...');
-    const { nombre, email, mensaje } = JSON.parse(event.body);
+    const body = JSON.parse(event.body);
+    const { nombre, email, mensaje, volNewsletter } = body;
     
     // Validar
     if (!nombre || !email || !mensaje) {
@@ -58,6 +60,36 @@ exports.handler = async (event) => {
         body: JSON.stringify({ error: 'Faltan campos requeridos' })
       };
     }
+
+// --- NOVA PART: afegir el client a Brevo si ha acceptat rebre novetats ---
+if (volNewsletter && email) {
+  try {
+    console.log('🟦 Afegint client a Brevo...');
+    const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        email,
+        listIds: [3], // 👉 posa aquí l’ID real de la teva llista Brevo
+        attributes: { NOMBRE: nombre }
+      })
+    });
+
+    const brevoData = await brevoResponse.json();
+    if (!brevoResponse.ok) {
+      console.error('❌ Error afegint client a Brevo:', brevoData);
+    } else {
+      console.log('✅ Client afegit correctament a la newsletter de Brevo');
+    }
+  } catch (error) {
+    console.error('💥 Error de connexió amb Brevo:', error);
+  }
+}
+
 
     console.log('✅ Datos válidos recibidos:', { nombre, email, mensaje: mensaje.substring(0, 50) + '...' });
 
