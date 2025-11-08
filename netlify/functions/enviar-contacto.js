@@ -1,25 +1,18 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const { Resend } = require('resend');
 
 exports.handler = async (event) => {
-  console.log('🔍 DEBUG - ¿ESTA ES LA FUNCIÓN CORRECTA?');
-  console.log('🔍 DEBUG - Ruta del archivo: netlify/functions/enviar-contacto.js');
-  console.log('🔍 DEBUG - RESEND_API_KEY existe?:', !!process.env.RESEND_API_KEY);
-  console.log('🔍 DEBUG - Variables disponibles:', Object.keys(process.env).filter(key => key.includes('RESEND')));
-  
-  // CORS COMPLETO - Permitir tu dominio Firebase y otros
-  const allowedOrigins = [
-  process.env.SITE_URL || 'https://botigamiuart.web.app',
-  'https://www.botigamiuart.web.app',
-  'https://miuart.netlify.app',
-  'https://miuartclientes.netlify.app',
-  'http://localhost:3000',
-  'http://localhost:5000'
-];
-  
+  console.log('🔍 DEBUG - Función enviar-contacto.js ejecutándose');
+
+  // Obtenir allowedOrigins des de variable d'entorn (separats per comes)
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
+
   const origin = event.headers.origin || event.headers.Origin;
-  const allowedOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
-  
+  const allowedOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0] || '*';
+
   const headers = {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Content-Type, Origin, Accept, X-Requested-With',
@@ -28,9 +21,8 @@ exports.handler = async (event) => {
     'Content-Type': 'application/json'
   };
 
-  // CRÍTICO: Manejar preflight OPTIONS
+  // Manejar preflight OPTIONS
   if (event.httpMethod === 'OPTIONS') {
-    console.log('✅ Preflight OPTIONS manejado correctamente para origen:', origin);
     return {
       statusCode: 200,
       headers,
@@ -38,7 +30,6 @@ exports.handler = async (event) => {
     };
   }
 
-  // Solo POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -48,11 +39,9 @@ exports.handler = async (event) => {
   }
 
   try {
-    console.log('📨 Procesando formulario...');
     const body = JSON.parse(event.body);
     const { nombre, email, mensaje, volNewsletter } = body;
-    
-    // Validar
+
     if (!nombre || !email || !mensaje) {
       return {
         statusCode: 400,
@@ -61,54 +50,47 @@ exports.handler = async (event) => {
       };
     }
 
-// --- NOVA PART: afegir el client a Brevo si ha acceptat rebre novetats ---
-if (volNewsletter && email) {
-  try {
-    console.log('🟦 Afegint client a Brevo...');
-    const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
-      method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'api-key': process.env.BREVO_API_KEY,
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        email,
-        listIds: [3], // 👉 posa aquí l’ID real de la teva llista Brevo
-        attributes: { NOMBRE: nombre }
-      })
-    });
+    // Añadir a Brevo si el usuario acepta newsletter
+    if (volNewsletter && email) {
+      try {
+        const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY,
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            email,
+            listIds: [Number(process.env.BREVO_LIST_ID)],
+            attributes: { NOMBRE: nombre }
+          })
+        });
 
-    const brevoData = await brevoResponse.json();
-    if (!brevoResponse.ok) {
-      console.error('❌ Error afegint client a Brevo:', brevoData);
-    } else {
-      console.log('✅ Client afegit correctament a la newsletter de Brevo');
+        const brevoData = await brevoResponse.json();
+        if (!brevoResponse.ok) {
+          console.error('❌ Error añadiendo cliente a Brevo:', brevoData);
+        } else {
+          console.log('✅ Cliente añadido correctamente a Brevo');
+        }
+      } catch (error) {
+        console.error('💥 Error de conexión con Brevo:', error);
+      }
     }
-  } catch (error) {
-    console.error('💥 Error de connexió amb Brevo:', error);
-  }
-}
 
-
-    console.log('✅ Datos válidos recibidos:', { nombre, email, mensaje: mensaje.substring(0, 50) + '...' });
-
-    // VERIFICAR API KEY DE RESEND
-    if (!process.env.RESEND_API_KEY) {
-      console.error('❌ RESEND_API_KEY no configurada en Netlify');
+    // Verificar API key de Resend
+    if (!process.env.RESEND_API_KEY || !process.env.BREVO_SENDER) {
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: 'Error de configuración del servidor - falta RESEND_API_KEY' })
+        body: JSON.stringify({ error: 'Error de configuración del servidor - faltan variables de entorno' })
       };
     }
 
-    console.log('🔄 Inicializando Resend...');
-    // Enviar email
     const resend = new Resend(process.env.RESEND_API_KEY);
-    
+
     const { data, error } = await resend.emails.send({
-      from: process.env.BREVO_SENDER || 'MiUArt <onboarding@resend.dev>',
+      from: process.env.BREVO_SENDER,
       to: ['miuartclientes@gmail.com'],
       subject: `📧 Nuevo mensaje de ${nombre} - MiUArt`,
       html: `
@@ -130,15 +112,10 @@ if (volNewsletter && email) {
       };
     }
 
-    console.log('🎉 Email enviado correctamente via Resend');
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ 
-        success: true, 
-        message: 'Email enviado correctamente',
-        data: data 
-      })
+      body: JSON.stringify({ success: true, message: 'Email enviado correctamente', data })
     };
 
   } catch (error) {
@@ -150,3 +127,6 @@ if (volNewsletter && email) {
     };
   }
 };
+
+
+    
