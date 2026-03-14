@@ -1,4 +1,4 @@
-/* app.js - complet i autònom - VERSIÓ CORREGIDA EMAILS + CUPONS + VARIABLES SEGURES */
+/* app.js - complet i autònom - VERSIÓ CORREGIDA EMAILS + CUPONS + VARIABLES SEGURES + PROMOCIONES */
 /* Funciones corregidas: 
    - Sistema de emails corregit: contacte usa template adminasync function enviarConfirmacionCliente(comandaData, comandaId) {
    - Confirmació client amb variables assegures (sense undefined)
@@ -9,6 +9,7 @@
    - Breadcrumb Navigation implementado
    - Sistema de comandas con notificación por email
    - Confirmación al cliente usando solo 2 templates
+   - NUEVO: Sección Promociones implementada
 */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
@@ -81,6 +82,11 @@ const usuarioInfo = document.getElementById("usuario-info");
 const agregarProductoLink = document.getElementById("agregar-producto-link");
 const imagenesCabeceraLink = document.getElementById("imagenes-cabecera-link");
 const configuracionLink = document.getElementById("configuracion-link");
+const estadisticasLink = document.getElementById("estadisticas-link");
+const stockLink = document.getElementById("stock-link");
+const pedidosLink = document.getElementById("pedidos-link");
+const pedidosEnviadosLink = document.getElementById("pedidos-enviados-link");
+const integracionesLink = document.getElementById("integraciones-link");
 
 const cartCountEl = document.getElementById("cart-count");
 const carritoContenido = document.getElementById("carrito-contenido");
@@ -110,6 +116,25 @@ const quienesSomosImagen = document.getElementById("quienes-somos-imagen");
 const quienesSomosTitulo = document.getElementById("quienes-somos-titulo");
 const quienesSomosTexto = document.getElementById("quienes-somos-texto");
 
+// NOVA: Selectors per a "Nuestra Especialidad"
+const nuestraEspecialidadTitulo = document.getElementById("nuestra-especialidad-titulo");
+const nuestraEspecialidadTexto = document.getElementById("nuestra-especialidad-texto");
+const nuestraEspecialidadImagenes = [
+  document.getElementById("nuestra-especialidad-img-1"),
+  document.getElementById("nuestra-especialidad-img-2"),
+  document.getElementById("nuestra-especialidad-img-3"),
+  document.getElementById("nuestra-especialidad-img-4"),
+  document.getElementById("nuestra-especialidad-img-5")
+];
+
+// NUEVO: Selectors para "Promociones"
+const promocionImages = [
+  document.getElementById("promocion-img-1"),
+  document.getElementById("promocion-img-2"),
+  document.getElementById("promocion-img-3"),
+  document.getElementById("promocion-img-4")
+];
+
 // NOU: Selectors per al sistema de descomptes
 const descuentoPopup = document.getElementById('descuento-popup');
 const descuentoMensaje = document.getElementById('descuento-mensaje');
@@ -126,10 +151,13 @@ const cuponMensaje = document.getElementById('cupon-mensaje');
 const CART_KEY = "miuart_cart_v1";
 let carrito = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
+const COOKIE_KEY = "miuart_cookies_v1";
+const COOKIE_EXPIRY_DAYS = 180;
+
 /* Valors de configuració general */
 let config = {
-    envioEstandar: 5.00,
-    enviamentGratisDesDe: 50.00,
+    envioEstandar: 6.00,
+    enviamentGratisDesDe: 35.00,
     sliderPromocionalTexto: "",
     videoUrl: "",
     logoUrl: "",
@@ -142,6 +170,19 @@ let config = {
     imagenQuienesSomos: "",
     tituloQuienesSomos: "",
     textoQuienesSomos: "",
+    // NOVA: Configuració per a "Nuestra Especialidad"
+    imagenEspecialidad1: "",
+    imagenEspecialidad2: "",
+    imagenEspecialidad3: "",
+    imagenEspecialidad4: "",
+    imagenEspecialidad5: "",
+    tituloNuestraEspecialidad: "",
+    textoNuestraEspecialidad: "",
+    // NUEVO: Configuración para "Promociones"
+    imagenPromociones1: "",
+    imagenPromociones2: "",
+    imagenPromociones3: "",
+    imagenPromociones4: "",
     // NOU: Configuració de descomptes
     promocionCompraSuperiorA: 0,
     porcentajeDescuento: 0
@@ -188,6 +229,8 @@ function updateBreadcrumb(pageId, productName = null) {
     'inicio': 'Inicio',
     'tienda': 'Tienda',
     'novedades': 'Novedades',
+    'nuestra-especialidad': 'Nuestra Especialidad',
+    'promociones': 'Promociones',
     'carrito': 'Carrito',
     'login-section': 'Iniciar Sesión',
     'agregar-producto': 'Agregar Producto',
@@ -235,6 +278,18 @@ function updateBreadcrumb(pageId, productName = null) {
     // Para novedades: Inicio > Novedades
     breadcrumbItems.push({
       name: 'Novedades',
+      href: null
+    });
+  } else if (pageId === 'nuestra-especialidad') {
+    // Para nuestra especialidad: Inicio > Nuestra Especialidad
+    breadcrumbItems.push({
+      name: 'Nuestra Especialidad',
+      href: null
+    });
+  } else if (pageId === 'promociones') {
+    // Para promociones: Inicio > Promociones
+    breadcrumbItems.push({
+      name: 'Promociones',
       href: null
     });
   } else {
@@ -306,6 +361,12 @@ function updateUIFromConfig() {
   
   // NOU: Actualitzar secció "Quiénes somos"
   updateQuienesSomosSection();
+  
+  // NOVA: Actualitzar secció "Nuestra Especialidad"
+  updateNuestraEspecialidadSection();
+  
+  // NUEVO: Actualizar sección "Promociones"
+  updatePromocionesSection();
 }
 
 // NOVA FUNCIÓ: Actualitzar imatges de la home
@@ -342,6 +403,129 @@ function updateQuienesSomosSection() {
   }
 }
 
+// MODIFICAR la función updateNuestraEspecialidadSection para que sea más robusta
+function updateNuestraEspecialidadSection() {
+  console.log("🔄 Actualizando sección Nuestra Especialidad");
+  
+  // Actualizar texto
+  if (nuestraEspecialidadTitulo && config.tituloNuestraEspecialidad) {
+    nuestraEspecialidadTitulo.textContent = config.tituloNuestraEspecialidad;
+  }
+  if (nuestraEspecialidadTexto && config.textoNuestraEspecialidad) {
+    nuestraEspecialidadTexto.textContent = config.textoNuestraEspecialidad;
+  }
+  
+  // Actualizar imágenes
+  const imageUrls = [
+    config.imagenEspecialidad1,
+    config.imagenEspecialidad2, 
+    config.imagenEspecialidad3,
+    config.imagenEspecialidad4,
+    config.imagenEspecialidad5
+  ];
+  
+  console.log("🖼️ URLs de imágenes:", imageUrls);
+  
+  imageUrls.forEach((url, index) => {
+    if (nuestraEspecialidadImagenes[index] && url) {
+      nuestraEspecialidadImagenes[index].src = url;
+      nuestraEspecialidadImagenes[index].alt = `Nuestra especialidad ${index + 1}`;
+      console.log(`✅ Imagen ${index + 1} cargada: ${url}`);
+    }
+  });
+  
+  // Reiniciar el slider si estamos en la página correcta
+  
+  // Esperar imatges carregades abans d'iniciar slider
+  Promise.all(
+    nuestraEspecialidadImagenes
+      .filter(img => img)
+      .map(img => new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      }))
+  ).then(() => {
+    console.log("Imatges carregades, iniciant slider...");
+    initNuestraEspecialidadSlider();
+  });
+
+if (location.hash === "#nuestra-especialidad") {
+    setTimeout(initNuestraEspecialidadSlider, 100);
+  }
+}
+
+// NUEVA FUNCIÓN: Actualizar sección Promociones
+function updatePromocionesSection() {
+  console.log("🔄 Actualizando sección Promociones");
+  
+  const imageUrls = [
+    config.imagenPromociones1,
+    config.imagenPromociones2, 
+    config.imagenPromociones3,
+    config.imagenPromociones4
+  ];
+  
+  console.log("🖼️ URLs de imágenes de promociones:", imageUrls);
+  
+  imageUrls.forEach((url, index) => {
+    if (promocionImages[index] && url) {
+      promocionImages[index].src = url;
+      promocionImages[index].alt = `Promoción ${index + 1}`;
+      console.log(`✅ Imagen promoción ${index + 1} cargada: ${url}`);
+    }
+  });
+}
+
+// NOVA FUNCIÓ: Inicializar slider de "Nuestra Especialidad" (VERSIÓ ROBUSTA)
+function initNuestraEspecialidadSlider() {
+  console.log("🔧 Inicializando slider de Nuestra Especialidad");
+  
+  const images = document.querySelectorAll('.nuestra-especialidad-slider img');
+  console.log(`📷 Encontradas ${images.length} imágenes en el slider`);
+  
+  // Verificar que hay imágenes
+  if (images.length === 0) {
+    console.error("❌ No se encontraron imágenes en el slider");
+    // Mostrar mensaje de fallback
+    const sliderContainer = document.querySelector('.nuestra-especialidad-imagenes');
+    if (sliderContainer) {
+      sliderContainer.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-style:italic;">Configura las imágenes en la sección de configuración</div>';
+    }
+    return;
+  }
+  
+  // Ocultar todas las imágenes inicialmente
+  images.forEach(img => {
+    img.classList.remove('active');
+    img.style.opacity = '0';
+  });
+  
+  // Mostrar la primera imagen si existe
+  if (images.length > 0) {
+    images[0].classList.add('active');
+    images[0].style.opacity = '1';
+    console.log(`✅ Mostrando primera imagen: ${images[0].src}`);
+  }
+  
+  // Cambiar imagen cada 4 segundos
+  let currentImageIndex = 0;
+  const intervalId = setInterval(() => {
+    if (images.length > 0) {
+      images[currentImageIndex].classList.remove('active');
+      images[currentImageIndex].style.opacity = '0';
+      
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      
+      images[currentImageIndex].classList.add('active');
+      images[currentImageIndex].style.opacity = '1';
+      
+      console.log(`🔄 Cambiando a imagen ${currentImageIndex + 1}`);
+    }
+  }, 4000);
+  
+  return intervalId;
+}
+
 /* ---------------------------
    ROUTING
    --------------------------- */
@@ -349,23 +533,24 @@ function showPage(id) {
   paginas.forEach(p => { p.classList.remove("active"); p.style.display = "none"; });
   const target = document.getElementById(id);
   if (target) { target.classList.add("active"); target.style.display = "block"; }
-
   // Controla la visibilitat del video
   if (id === 'inicio') {
       updateUIFromConfig(); // Això mostrarà el vídeo si té URL
   } else if (videoContainerWrapper) {
       videoContainerWrapper.style.display = 'none';
   }
-
   // Actualizar breadcrumb
   updateBreadcrumb(id);
-
   // acciones por página
   if (id === "tienda") {
     loadHeaderImages();
     loadProducts();
   } else if (id === "novedades") { // NOU: Carregar novedades
     loadNovedades();
+  } else if (id === "nuestra-especialidad") { // NOVA: Inicializar slider
+    initNuestraEspecialidadSlider();
+  } else if (id === "promociones") { // NUEVO: Actualizar promociones
+    updatePromocionesSection();
   } else if (id === "carrito") {
     renderCart();
   } else if (id === "imagenes-cabecera") {
@@ -374,10 +559,26 @@ function showPage(id) {
     loadConfigForm();
   } else if (id === "detalle-producto") {
     loadHeaderImagesDetalle();
+  } else if (id === "estadisticas") {
+    loadEstadisticas();
+  } else if (id === "stock") {
+    loadStock();
+  } else if (id === "pedidos") {
+    loadPedidos();
+  } else if (id === "pedidos-enviados") {
+    loadPedidosEnviados();
+  } else if (id === "integraciones") {
+    loadIntegraciones();
   }
-  
+
   // NOU: Amagar el pop-up de cerca quan canviem de pàgina
   hideSearchResults();
+
+  // Registrar visita (no registrem pàgines d'admin)
+  const paginasAdmin = ["agregar-producto", "editar-producto", "imagenes-cabecera", "configuracion", "estadisticas", "stock", "pedidos", "pedidos-enviados", "integraciones", "login-section"];
+  if (!paginasAdmin.includes(id)) {
+    registrarVisita(id);
+  }
 }
 window.addEventListener("hashchange", () => {
   const h = location.hash.replace("#", "") || "inicio";
@@ -395,7 +596,6 @@ window.addEventListener("hashchange", () => {
   showPage(h || "inicio");
 });
 showPage(location.hash.replace("#", "") || "inicio");
-
 /* ---------------------------
    NAV MENU (mobiles)
    --------------------------- */
@@ -522,6 +722,11 @@ onAuthStateChanged(auth, (user) => {
     agregarProductoLink.style.display = "inline-block";
     imagenesCabeceraLink.style.display = "inline-block";
     configuracionLink.style.display = "inline-block";
+    estadisticasLink.style.display = "inline-block";
+    stockLink.style.display = "inline-block";
+    pedidosLink.style.display = "inline-block";
+    pedidosEnviadosLink.style.display = "inline-block";
+    integracionesLink.style.display = "inline-block";
   } else {
     usuarioInfo.textContent = "";
     authLink.textContent = "Login";
@@ -530,6 +735,11 @@ onAuthStateChanged(auth, (user) => {
     agregarProductoLink.style.display = "none";
     imagenesCabeceraLink.style.display = "none";
     configuracionLink.style.display = "none";
+    estadisticasLink.style.display = "none";
+    stockLink.style.display = "none";
+    pedidosLink.style.display = "none";
+    pedidosEnviadosLink.style.display = "none";
+    integracionesLink.style.display = "none";
   }
   loadProducts();
   loadConfig();
@@ -1171,6 +1381,7 @@ function renderHeaderSlider() {
     img.src = it.url;
     img.alt = "Cabecera " + (idx + 1);
     if (idx === 0) img.classList.add("active");
+    else img.classList.add("next");
     cabeceraSlider.appendChild(img);
   });
   if (headerInterval) clearInterval(headerInterval);
@@ -1179,12 +1390,33 @@ function renderHeaderSlider() {
   headerInterval = setInterval(() => {
     const nodes = cabeceraSlider.querySelectorAll("img");
     if (!nodes.length) return;
-    nodes.forEach(n => n.classList.remove("active", "prev"));
-    nodes[idx].classList.add("prev");
+    const prevIdx = idx;
     idx = (idx + 1) % nodes.length;
+
+    // Primer reposicionem les imatges que no participen, sense transició
+    nodes.forEach((n, i) => {
+      if (i !== prevIdx && i !== idx) {
+        n.style.transition = "none";
+        n.classList.remove("active", "prev", "next");
+        n.classList.add("next");
+      }
+    });
+
+    // Forcem reflow perquè el navegador processi el canvi sense transició
+    cabeceraSlider.offsetHeight;
+
+    // Ara fem l'animació de la imatge que surt i la que entra
+    nodes[prevIdx].style.transition = "left 0.75s ease";
+    nodes[prevIdx].classList.remove("active");
+    nodes[prevIdx].classList.add("prev");
+
+    nodes[idx].style.transition = "left 0.75s ease";
+    nodes[idx].classList.remove("next");
     nodes[idx].classList.add("active");
+
   }, 4000);
 }
+
 function renderHeaderSliderDetalle() {
   if (!cabeceraSliderDetalle) return;
   cabeceraSliderDetalle.innerHTML = "";
@@ -1193,6 +1425,7 @@ function renderHeaderSliderDetalle() {
     img.src = it.url;
     img.alt = "Cabecera " + (idx + 1);
     if (idx === 0) img.classList.add("active");
+    else img.classList.add("next");
     cabeceraSliderDetalle.appendChild(img);
   });
   if (headerInterval) clearInterval(headerInterval);
@@ -1201,10 +1434,30 @@ function renderHeaderSliderDetalle() {
   headerInterval = setInterval(() => {
     const nodes = cabeceraSliderDetalle.querySelectorAll("img");
     if (!nodes.length) return;
-    nodes.forEach(n => n.classList.remove("active", "prev"));
-    nodes[idx].classList.add("prev");
+    const prevIdx = idx;
     idx = (idx + 1) % nodes.length;
+
+    // Primer reposicionem les imatges que no participen, sense transició
+    nodes.forEach((n, i) => {
+      if (i !== prevIdx && i !== idx) {
+        n.style.transition = "none";
+        n.classList.remove("active", "prev", "next");
+        n.classList.add("next");
+      }
+    });
+
+    // Forcem reflow perquè el navegador processi el canvi sense transició
+    cabeceraSliderDetalle.offsetHeight;
+
+    // Ara fem l'animació de la imatge que surt i la que entra
+    nodes[prevIdx].style.transition = "left 0.75s ease";
+    nodes[prevIdx].classList.remove("active");
+    nodes[prevIdx].classList.add("prev");
+
+    nodes[idx].style.transition = "left 0.75s ease";
+    nodes[idx].classList.remove("next");
     nodes[idx].classList.add("active");
+
   }, 4000);
 }
 
@@ -1286,6 +1539,19 @@ async function loadConfig() {
       config.imagenQuienesSomos = data.imagenQuienesSomos || "";
       config.tituloQuienesSomos = data.tituloQuienesSomos || "";
       config.textoQuienesSomos = data.textoQuienesSomos || "";
+      // NOVA: Carregar configuració de "Nuestra Especialidad"
+      config.imagenEspecialidad1 = data.imagenEspecialidad1 || "";
+      config.imagenEspecialidad2 = data.imagenEspecialidad2 || "";
+      config.imagenEspecialidad3 = data.imagenEspecialidad3 || "";
+      config.imagenEspecialidad4 = data.imagenEspecialidad4 || "";
+      config.imagenEspecialidad5 = data.imagenEspecialidad5 || "";
+      config.tituloNuestraEspecialidad = data.tituloNuestraEspecialidad || "";
+      config.textoNuestraEspecialidad = data.textoNuestraEspecialidad || "";
+      // NUEVO: Cargar configuración de "Promociones"
+      config.imagenPromociones1 = data.imagenPromociones1 || "";
+      config.imagenPromociones2 = data.imagenPromociones2 || "";
+      config.imagenPromociones3 = data.imagenPromociones3 || "";
+      config.imagenPromociones4 = data.imagenPromociones4 || "";
       // NOU: Carregar configuració de descomptes
       config.promocionCompraSuperiorA = Number(data.promocionCompraSuperiorA || 0);
       config.porcentajeDescuento = Number(data.porcentajeDescuento || 0);
@@ -1293,8 +1559,8 @@ async function loadConfig() {
       // Si no existeix, el creem amb valors per defecte
       await setDoc(ref, { 
         enviament: 5.00, 
-        enviamentGratisDesDe: 50.00,
-        sliderPromociones: "¡Envío gratis a partir de 50€!",
+        enviamentGratisDesDe: 35.00,
+        sliderPromociones: "¡Envío gratis a partir de 35€!",
         videoUrl: "",
         logoUrl: "",
         // NOU: Valors per defecte per les imatges
@@ -1307,6 +1573,19 @@ async function loadConfig() {
         imagenQuienesSomos: "",
         tituloQuienesSomos: "",
         textoQuienesSomos: "",
+        // NOVA: Valors per defecte per "Nuestra Especialidad"
+        imagenEspecialidad1: "",
+        imagenEspecialidad2: "",
+        imagenEspecialidad3: "",
+        imagenEspecialidad4: "",
+        imagenEspecialidad5: "",
+        tituloNuestraEspecialidad: "",
+        textoNuestraEspecialidad: "",
+        // NUEVO: Valores por defecto para "Promociones"
+        imagenPromociones1: "",
+        imagenPromociones2: "",
+        imagenPromociones3: "",
+        imagenPromociones4: "",
         // NOU: Valors per defecte per descomptes
         promocionCompraSuperiorA: 0,
         porcentajeDescuento: 0
@@ -1336,6 +1615,19 @@ async function loadConfigForm() {
     document.getElementById("imagen-quienes-somos").value = config.imagenQuienesSomos;
     document.getElementById("titulo-quienes-somos").value = config.tituloQuienesSomos;
     document.getElementById("texto-quienes-somos").value = config.textoQuienesSomos;
+    // NOVA: Carregar camps de "Nuestra Especialidad"
+    document.getElementById("imagen-especialidad-1").value = config.imagenEspecialidad1;
+    document.getElementById("imagen-especialidad-2").value = config.imagenEspecialidad2;
+    document.getElementById("imagen-especialidad-3").value = config.imagenEspecialidad3;
+    document.getElementById("imagen-especialidad-4").value = config.imagenEspecialidad4;
+    document.getElementById("imagen-especialidad-5").value = config.imagenEspecialidad5;
+    document.getElementById("titulo-nuestra-especialidad").value = config.tituloNuestraEspecialidad;
+    document.getElementById("texto-nuestra-especialidad").value = config.textoNuestraEspecialidad;
+    // NUEVO: Cargar campos de "Promociones"
+    document.getElementById("imagen-promociones-1").value = config.imagenPromociones1;
+    document.getElementById("imagen-promociones-2").value = config.imagenPromociones2;
+    document.getElementById("imagen-promociones-3").value = config.imagenPromociones3;
+    document.getElementById("imagen-promociones-4").value = config.imagenPromociones4;
     // NOU: Carregar camps de descomptes
     document.getElementById("promocion-compra-superior").value = config.promocionCompraSuperiorA;
     document.getElementById("porcentaje-descuento").value = config.porcentajeDescuento;
@@ -1358,6 +1650,19 @@ if (formularioConfiguracion) {
         imagenQuienesSomos: document.getElementById("imagen-quienes-somos").value.trim(),
         tituloQuienesSomos: document.getElementById("titulo-quienes-somos").value.trim(),
         textoQuienesSomos: document.getElementById("texto-quienes-somos").value.trim(),
+        // NOVA: Afegir configuració de "Nuestra Especialidad"
+        imagenEspecialidad1: document.getElementById("imagen-especialidad-1").value.trim(),
+        imagenEspecialidad2: document.getElementById("imagen-especialidad-2").value.trim(),
+        imagenEspecialidad3: document.getElementById("imagen-especialidad-3").value.trim(),
+        imagenEspecialidad4: document.getElementById("imagen-especialidad-4").value.trim(),
+        imagenEspecialidad5: document.getElementById("imagen-especialidad-5").value.trim(),
+        tituloNuestraEspecialidad: document.getElementById("titulo-nuestra-especialidad").value.trim(),
+        textoNuestraEspecialidad: document.getElementById("texto-nuestra-especialidad").value.trim(),
+        // NUEVO: Añadir configuración de "Promociones"
+        imagenPromociones1: document.getElementById("imagen-promociones-1").value.trim(),
+        imagenPromociones2: document.getElementById("imagen-promociones-2").value.trim(),
+        imagenPromociones3: document.getElementById("imagen-promociones-3").value.trim(),
+        imagenPromociones4: document.getElementById("imagen-promociones-4").value.trim(),
         // NOU: Afegir configuració de descomptes
         promocionCompraSuperiorA: Number(document.getElementById("promocion-compra-superior").value || 0),
         porcentajeDescuento: Number(document.getElementById("porcentaje-descuento").value || 0),
@@ -1377,6 +1682,19 @@ if (formularioConfiguracion) {
       config.imagenQuienesSomos = newConfig.imagenQuienesSomos;
       config.tituloQuienesSomos = newConfig.tituloQuienesSomos;
       config.textoQuienesSomos = newConfig.textoQuienesSomos;
+      // NOVA: Actualitzar configuració de "Nuestra Especialidad"
+      config.imagenEspecialidad1 = newConfig.imagenEspecialidad1;
+      config.imagenEspecialidad2 = newConfig.imagenEspecialidad2;
+      config.imagenEspecialidad3 = newConfig.imagenEspecialidad3;
+      config.imagenEspecialidad4 = newConfig.imagenEspecialidad4;
+      config.imagenEspecialidad5 = newConfig.imagenEspecialidad5;
+      config.tituloNuestraEspecialidad = newConfig.tituloNuestraEspecialidad;
+      config.textoNuestraEspecialidad = newConfig.textoNuestraEspecialidad;
+      // NUEVO: Actualizar configuración de "Promociones"
+      config.imagenPromociones1 = newConfig.imagenPromociones1;
+      config.imagenPromociones2 = newConfig.imagenPromociones2;
+      config.imagenPromociones3 = newConfig.imagenPromociones3;
+      config.imagenPromociones4 = newConfig.imagenPromociones4;
       // NOU: Actualitzar configuració de descomptes
       config.promocionCompraSuperiorA = newConfig.promocionCompraSuperiorA;
       config.porcentajeDescuento = newConfig.porcentajeDescuento;
@@ -1445,6 +1763,12 @@ if (contactForm) {
     } else {
       alert('Error al enviar el mensaje. Por favor, intenta de nuevo.');
     }
+  });
+}
+
+if (contactPopupClose) {
+  contactPopupClose.addEventListener('click', function() {
+    contactPopup.classList.add('hidden');
   });
 }
 
@@ -1542,9 +1866,9 @@ function guardarCuponLocalStorage(cupon) {
 }
 
 // Función mejorada para mostrar popup (usa la nueva generación)
-async function mostrarPopupDescuento(subtotal) {
+async function mostrarPopupDescuento(subtotal, cuponExistent) {
   if (descuentoPopup && descuentoMensaje && codigoDescuento) {
-    const cupon = await generarCuponHibrido(config.porcentajeDescuento);
+    const cupon = cuponExistent || await generarCuponHibrido(config.porcentajeDescuento);
     
     descuentoMensaje.innerHTML = `Tu compra ha sido superior a <strong>${config.promocionCompraSuperiorA}€</strong>.<br>
                                  Has conseguido un cupón de descuento del <strong>${config.porcentajeDescuento}%</strong> en tu siguiente compra.`;
@@ -1862,7 +2186,6 @@ async function enviarConfirmacionCliente(comandaData, comandaId) {
     </thead>
     <tbody>
   `;
-
   for (const p of comandaData.productos) {
     const subtotal = p.precio * p.cantidad;
     productosHTML += `
@@ -1878,7 +2201,6 @@ async function enviarConfirmacionCliente(comandaData, comandaId) {
       </tr>
     `;
   }
-
   productosHTML += `</tbody></table>`;
 
   // === CUPÓ: NOMÉS LLEGIR, NO GENERAR ===
@@ -1901,21 +2223,27 @@ async function enviarConfirmacionCliente(comandaData, comandaId) {
   const nombre = `${comandaData.cliente.nombre} ${comandaData.cliente.apellidos}`.trim();
   const direccion = [comandaData.cliente.direccion, comandaData.cliente.infoAdicional, `${comandaData.cliente.codigoPostal} ${comandaData.cliente.ciudad}`, comandaData.cliente.pais].filter(Boolean).join('\n');
 
-  // === ENVIAR EMAIL ===
-  await emailjs.send('service_z163vmr', 'template_353l90q', {
-    client_email: comandaData.cliente.email,
-    order_id: comandaId,
-    client_name: nombre,
-    client_phone: comandaData.cliente.telefono,
-    client_address: direccion,
-    date: new Date().toLocaleDateString('es-ES'),
-    subtotal: formatPrice(comandaData.totals.subtotal),
-    envio: formatPrice(comandaData.totals.envio),
-    iva: formatPrice(comandaData.totals.iva),
-    total: formatPrice(comandaData.totals.total),
-    productos_html: productosHTML,
-    cupon_html: cuponHTML
+  // === ENVIAR EMAIL VIA NETLIFY + RESEND ===
+  const response = await fetch('https://miuartclientes.netlify.app/.netlify/functions/enviar-confirmacion', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_email: comandaData.cliente.email,
+      order_id: comandaId.slice(-8).toUpperCase(),
+      client_name: nombre,
+      client_phone: comandaData.cliente.telefono,
+      client_address: direccion,
+      date: new Date().toLocaleDateString('es-ES'),
+      subtotal: formatPrice(comandaData.totals.subtotal),
+      envio: formatPrice(comandaData.totals.envio),
+      iva: formatPrice(comandaData.totals.iva),
+      total: formatPrice(comandaData.totals.total),
+      productos_html: productosHTML,
+      cupon_html: cuponHTML
+    })
   });
+
+  if (!response.ok) throw new Error('Error al enviar el email de confirmació');
 
   console.log('Email enviat al client');
   return true;
@@ -2023,6 +2351,7 @@ async function enviarNotificacionAdmin(comandaData, comandaId) {
       // Variables necessàries per al template
       asunto: `🛒 Nueva Comanda #${comandaId}`,
       comanda_id: comandaId,
+      ref_curta: comandaId.slice(-8).toUpperCase(),
       client_nom: nombreCliente,
       client_email: comandaData.cliente.email,
       client_telefon: comandaData.cliente.telefono || 'No proporcionado',
@@ -2125,9 +2454,13 @@ async function guardarComanda(datosFormulario) {
     // === GENERAR CUPÓ (NUEVA VERSIÓN HÍBRIDA) ===
 const subtotal = calcularSubtotal();
 if (subtotal >= config.promocionCompraSuperiorA && config.porcentajeDescuento > 0) {
-  // Usar la nueva función híbrida
   const cupon = await generarCuponHibrido(config.porcentajeDescuento);
-  mostrarPopupDescuento(subtotal);
+  comandaData.cuponGenerado = {
+    codigo: cupon.codigo,
+    descuento: cupon.descuento,
+    fechaCaducidad: cupon.fechaCaducidad
+  };
+  mostrarPopupDescuento(subtotal, cupon);
   console.log('Cupón generado en compra:', cupon.codigo);
 }
 
@@ -2339,117 +2672,81 @@ function renderCart() {
   }
 }
 
+function getDeviceType() {
+  const ua = navigator.userAgent;
+
+  if (/android/i.test(ua)) return "android";
+  if (/iphone|ipad|ipod/i.test(ua)) return "ios";
+  return "desktop";
+}
+
 function showAddressForm() {
-  // Tu información personal - RELLENA ESTOS DATOS
+
   console.log("🔄 showAddressForm() ejecutándose...");
-  const tuTelefonoBizum = "+34 600 000 000"; // Tu teléfono para Bizum
-  const tuIBAN = "ES00 0000 0000 0000 0000 0000"; // Tu IBAN para transferencias
   console.log("💰 Carrito actual:", carrito);
   console.log("💰 Subtotal calculado:", calcularSubtotal());
   console.log("💰 Total calculado:", calcularTotal());
   console.log("💰 Descuento aplicado:", descuentoAplicado);
 
+  const device = getDeviceType();
 
   direccionFormContainer.innerHTML = `
     <form id="direccion-form" class="direccion-form">
       <label for="nombre">Nombre</label>
       <input id="nombre" type="text" placeholder="Nombre" required>
+
       <label for="apellidos">Apellidos</label>
       <input id="apellidos" type="text" placeholder="Apellidos" required>
+
       <label for="direccion">Dirección</label>
       <input id="direccion" type="text" placeholder="Dirección" required>
-      <label for="info-adicional">Información adicional (planta, puerta...)</label>
-      <input id="info-adicional" type="text" placeholder="Información adicional (planta, puerta...)" required>
+
+      <label for="info-adicional">Información adicional</label>
+      <input id="info-adicional" type="text" placeholder="Información adicional" required>
+
       <label for="codigo-postal">Código postal</label>
       <input id="codigo-postal" type="text" placeholder="Código postal" required>
+
       <label for="ciudad">Ciudad</label>
       <input id="ciudad" type="text" placeholder="Ciudad" required>
+
       <label for="pais">País</label>
       <input id="pais" type="text" value="España" readonly required>
+
       <label for="telefono">Teléfono</label>
       <input id="telefono" type="tel" placeholder="Teléfono" required>
+
       <label for="email">E-mail</label>
       <input id="email" type="email" placeholder="E-mail" required>
     </form>
 
     <div class="opciones-pago-particular">
       <h3>Elige método de pago:</h3>
-      
-      <!-- Pago Online con PayPal (Tarjetas, Apple Pay, Google Pay) -->
+
+      <!-- PAYPAL SIEMPRE -->
       <div class="opcion-pago destaque">
-        <div class="pago-header">
-          <h4>💳 Pago Online Seguro</h4>
-          <div class="metodos-pago-icons">
-            <span class="metodo-icon">🍎 Apple Pay</span>
-            <span class="metodo-icon">📱 Google Pay</span> 
-            <span class="metodo-icon">💳 Tarjetas</span>
-            <span class="metodo-icon">📧 PayPal</span>
-          </div>
-        </div>
-        <p class="pago-descripcion">Pago instantáneo y seguro con redirección a PayPal</p>
+        <h4>💳 Pago Online Seguro</h4>
         <div id="paypal-button-container"></div>
       </div>
 
-      <!-- Bizum -->
-      <div class="opcion-pago">
-        <div class="pago-header">
-          <h4>📱 Bizum</h4>
-        </div>
-        <p class="pago-descripcion">Pago instantáneo desde tu app bancaria</p>
-        <div class="pago-datos">
-          <div class="dato-pago">
-            <span class="dato-label">Teléfono:</span>
-            <span class="dato-valor">${tuTelefonoBizum}</span>
-          </div>
-          <div class="dato-pago">
-            <span class="dato-label">Importe:</span>
-            <span class="dato-valor">${formatPrice(calcularTotal())}</span>
-          </div>
-        </div>
-        <button id="confirmar-bizum" class="btn secondary">
-          ✅ Confirmar Pedido con Bizum
-        </button>
-      </div>
+     
 
-      <!-- Transferencia Bancaria -->
-      <div class="opcion-pago">
-        <div class="pago-header">
-          <h4>🏦 Transferencia Bancaria</h4>
-        </div>
-        <p class="pago-descripcion">Transferencia bancaria tradicional</p>
-        <div class="pago-datos">
-          <div class="dato-pago">
-            <span class="dato-label">IBAN:</span>
-            <span class="dato-valor">${tuIBAN}</span>
-          </div>
-          <div class="dato-pago">
-            <span class="dato-label">Importe:</span>
-            <span class="dato-valor">${formatPrice(calcularTotal())}</span>
-          </div>
-          <div class="dato-pago">
-            <span class="dato-label">Concepto:</span>
-            <span class="dato-valor">Pedido MiUArt</span>
-          </div>
-        </div>
-        <button id="confirmar-transferencia" class="btn secondary">
-          ✅ Confirmar Pedido con Transferencia
-        </button>
-      </div>
     </div>
   `;
 
-  // Obtener referencia al formulario
   const form = document.getElementById("direccion-form");
 
-  // Función para validar formulario
   function validarFormulario() {
-    const fields = ["nombre", "apellidos", "direccion", "info-adicional", "codigo-postal", "ciudad", "pais", "telefono", "email"];
+    const fields = ["nombre","apellidos","direccion","info-adicional",
+      "codigo-postal","ciudad","pais","telefono","email"];
+
     let valid = true;
     const formData = {};
-    
+
     fields.forEach(field => {
       const input = document.getElementById(field);
       formData[field] = input.value.trim();
+
       if (!formData[field]) {
         valid = false;
         input.style.borderColor = "#c0392b";
@@ -2457,23 +2754,20 @@ function showAddressForm() {
         input.style.borderColor = "";
       }
     });
-    
+
     return valid ? formData : null;
   }
 
-  // Función para procesar pedido exitoso
-  async function procesarPedidoExitoso(formData, metodoPago = 'PayPal') {
+  async function procesarPedidoExitoso(formData) {
     try {
       const comandaId = await guardarComanda(formData);
-      
-      // Marcar cupón como usado si se aplicó
+
       if (cuponAplicado) {
         marcarCuponUtilizado(cuponAplicado.codigo);
       }
 
-      alert(`¡Pedido ${metodoPago !== 'PayPal' ? 'confirmado' : 'completado'}! Número de pedido: ${comandaId}`);
-      
-      // Limpiar carrito después de la compra
+      alert("¡Pedido completado! Número: " + comandaId);
+
       setTimeout(() => {
         carrito = [];
         saveCart();
@@ -2481,113 +2775,55 @@ function showAddressForm() {
         direccionFormContainer.innerHTML = "";
         resetearCupon();
       }, 100);
-      
+
     } catch (error) {
-      console.error("Error en el proceso de compra:", error);
-      alert("Error al procesar la compra. Por favor, intenta nuevamente.");
+      console.error("Error:", error);
+      alert("Error al procesar la compra.");
     }
   }
 
-  // ========== CONFIGURACIÓN PAYPAL ==========
+  // PAYPAL
   paypal.Buttons({
     style: {
       layout: 'vertical',
-      color:  'gold',
-      shape:  'rect',
-      label:  'paypal'
+      color: 'gold',
+      shape: 'rect',
+      label: 'paypal'
     },
-    
     createOrder: (data, actions) => {
-      // Validar formulario antes de proceder con PayPal
       const formData = validarFormulario();
       if (!formData) {
-        alert("Por favor, completa todos los campos obligatorios antes de pagar.");
-        return false;
+        alert("Completa todos los campos.");
+        return Promise.reject(new Error("Formulario inválido"));
       }
-
       return actions.order.create({
         purchase_units: [{
           amount: {
             value: calcularTotal().toFixed(2),
             currency_code: 'EUR'
           },
-          description: 'Compra en MiUArt'
+          description: 'Compra MiuArt'
         }]
       });
     },
-
     onApprove: async (data, actions) => {
       try {
-        const detalles = await actions.order.capture();
+        await actions.order.capture();
         const formData = validarFormulario();
-        
         if (formData) {
-          await procesarPedidoExitoso(formData, 'PayPal');
+          await procesarPedidoExitoso(formData);
         }
       } catch (error) {
-        console.error('Error en pago PayPal:', error);
-        alert('Error al procesar el pago con PayPal. Por favor, intenta de nuevo.');
+        console.error("Error captura PayPal:", error);
+        alert("Error en el pago: " + (error.message || JSON.stringify(error)));
       }
     },
-
     onError: (err) => {
-      console.error('Error en el pago con PayPal:', err);
-      alert('Ocurrió un error al procesar el pago con PayPal. Por favor, intenta de nuevo.');
-    },
-
-    onCancel: (data) => {
-      console.log('Pago cancelado por el usuario');
+      console.error("Error PayPal:", err);
+      alert("Error con PayPal.");
     }
-
   }).render('#paypal-button-container');
-
-  // ========== EVENT LISTENERS PARA BIZUM Y TRANSFERENCIA ==========
-  
-  // Bizum
-  document.getElementById("confirmar-bizum").addEventListener("click", async (e) => {
-    e.preventDefault();
-    const formData = validarFormulario();
-    
-    if (formData) {
-      // Mostrar loading
-      const bizumBtn = document.getElementById("confirmar-bizum");
-      const originalText = bizumBtn.textContent;
-      bizumBtn.textContent = "Procesando...";
-      bizumBtn.disabled = true;
-
-      await procesarPedidoExitoso(formData, 'Bizum');
-
-      // Restaurar botón
-      bizumBtn.textContent = originalText;
-      bizumBtn.disabled = false;
-    } else {
-      alert("Por favor, completa todos los campos obligatorios.");
-    }
-  });
-
-  // Transferencia
-  document.getElementById("confirmar-transferencia").addEventListener("click", async (e) => {
-    e.preventDefault();
-    const formData = validarFormulario();
-    
-    if (formData) {
-      // Mostrar loading
-      const transferenciaBtn = document.getElementById("confirmar-transferencia");
-      const originalText = transferenciaBtn.textContent;
-      transferenciaBtn.textContent = "Procesando...";
-      transferenciaBtn.disabled = true;
-
-      await procesarPedidoExitoso(formData, 'Transferencia');
-
-      // Restaurar botón
-      transferenciaBtn.textContent = originalText;
-      transferenciaBtn.disabled = false;
-    } else {
-      alert("Por favor, completa todos los campos obligatorios.");
-    }
-  });
 }
-
 if (vaciarCarritoBtn) vaciarCarritoBtn.addEventListener("click", () => {
   if (!confirm("¿Vaciar carrito?")) return;
   carrito = [];
@@ -2597,6 +2833,117 @@ if (vaciarCarritoBtn) vaciarCarritoBtn.addEventListener("click", () => {
 });
 
 /* ---------------------------
+   ESTADÍSTICAS DE VISITAS
+   --------------------------- */
+
+async function registrarVisita(seccion) {
+  if (!cookiesAnaliticaPermeses()) return;
+  try {
+    console.log("📊 Registrant visita a:", seccion);
+    const hoy = new Date().toISOString().split('T')[0];
+    const docRef = doc(db, "estadisticas", hoy);
+    const docSnap = await getDoc(docRef);
+    console.log("📊 Document existeix:", docSnap.exists());
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      await updateDoc(docRef, {
+        [seccion]: (data[seccion] || 0) + 1,
+        total: (data.total || 0) + 1
+      });
+    } else {
+      await setDoc(docRef, {
+        [seccion]: 1,
+        total: 1,
+        fecha: hoy
+      });
+    }
+    console.log("📊 Visita registrada correctament");
+  } catch (e) {
+    console.error("📊 Error registrant visita:", e);
+  }
+}
+
+async function loadEstadisticas() {
+  const contenedor = document.getElementById("estadisticas-contenido");
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "<p>Cargando estadísticas...</p>";
+
+  try {
+    const secciones = ["inicio", "tienda", "novedades", "nuestra-especialidad", "promociones", "quienes-somos", "contacto"];
+    const snap = await getDocs(query(collection(db, "estadisticas"), orderBy("fecha", "desc"), limit(30)));
+
+    const dias = [];
+    snap.forEach(d => dias.push(d.data()));
+
+    if (dias.length === 0) {
+      contenedor.innerHTML = "<p>Todavía no hay datos de visitas.</p>";
+      return;
+    }
+
+    const totales = {};
+    let totalGeneral = 0;
+    secciones.forEach(s => totales[s] = 0);
+    dias.forEach(d => {
+      secciones.forEach(s => { totales[s] += d[s] || 0; });
+      totalGeneral += d.total || 0;
+    });
+
+    const masVisitada = secciones.reduce((a, b) => totales[a] > totales[b] ? a : b);
+
+    contenedor.innerHTML = `
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-bottom:2rem;">
+        <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#c0618a;">${totalGeneral}</div>
+          <div style="color:#666; margin-top:0.5rem;">Visitas totales (30 días)</div>
+        </div>
+        <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#c0618a;">${dias.length}</div>
+          <div style="color:#666; margin-top:0.5rem;">Días con actividad</div>
+        </div>
+        <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:1.2rem; font-weight:700; color:#c0618a;">${masVisitada}</div>
+          <div style="color:#666; margin-top:0.5rem;">Sección más visitada</div>
+        </div>
+      </div>
+
+      <h3>Visitas por sección (últimos 30 días)</h3>
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:0.75rem; margin-bottom:2rem;">
+        ${secciones.map(s => `
+          <div style="background:white; border:1px solid #eee; border-radius:10px; padding:1rem; text-align:center;">
+            <div style="font-size:1.5rem; font-weight:700; color:#333;">${totales[s]}</div>
+            <div style="color:#888; font-size:0.85rem; margin-top:0.25rem;">${s}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <h3>Registro diario (últimos 30 días)</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="background:#f8f0f5;">
+            <th style="padding:8px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Fecha</th>
+            ${secciones.map(s => `<th style="padding:8px 12px; text-align:center; border-bottom:2px solid #e0c8d8;">${s}</th>`).join('')}
+            <th style="padding:8px 12px; text-align:center; border-bottom:2px solid #e0c8d8;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${dias.map(d => `
+            <tr style="border-bottom:1px solid #f0e0ea;">
+              <td style="padding:8px 12px;">${d.fecha}</td>
+              ${secciones.map(s => `<td style="padding:8px 12px; text-align:center;">${d[s] || 0}</td>`).join('')}
+              <td style="padding:8px 12px; text-align:center; font-weight:700;">${d.total || 0}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (e) {
+    contenedor.innerHTML = `<p>Error cargando estadísticas: ${e.message}</p>`;
+  }
+}
+
+/* ---------------------------
    INICIALIZACIONES
    --------------------------- */
 buildAddProductForm();
@@ -2604,16 +2951,727 @@ saveCart();
 loadProducts();
 loadHeaderImages();
 loadConfig();
-
 // NOU: Inicialitzar el cercador
 initSearch();
-
 // NOU: Inicialitzar el sistema de cupons
 initCuponSystem();
-
 if (searchInput) searchInput.addEventListener("input", () => {
   renderProductGrid(productsCache);
 });
+
+/* ---------------------------
+   COOKIE BANNER
+   --------------------------- */
+
+function cookieConsentGuardat() {
+  const saved = localStorage.getItem(COOKIE_KEY);
+  if (!saved) return null;
+  const data = JSON.parse(saved);
+  const ara = new Date().getTime();
+  if (ara > data.expiry) {
+    localStorage.removeItem(COOKIE_KEY);
+    return null;
+  }
+  return data;
+}
+
+function guardarCookieConsent(analitica, terceros) {
+  const expiry = new Date().getTime() + (COOKIE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+  localStorage.setItem(COOKIE_KEY, JSON.stringify({ analitica, terceros, expiry }));
+}
+
+function tancarBanner() {
+  const banner = document.getElementById("cookie-banner");
+  if (banner) banner.style.display = "none";
+}
+
+function tancarPanel() {
+  document.getElementById("cookie-panel").style.display = "none";
+  document.getElementById("cookie-overlay").style.display = "none";
+}
+
+function obrirPanel() {
+  document.getElementById("cookie-panel").style.display = "block";
+  document.getElementById("cookie-overlay").style.display = "block";
+}
+
+function initCookieBanner() {
+  const banner = document.getElementById("cookie-banner");
+  const consent = cookieConsentGuardat();
+
+  // Mostrar o amagar el banner segons si hi ha consentiment
+  if (consent) {
+    if (banner) banner.style.display = "none";
+  } else {
+    if (banner) banner.style.display = "flex";
+  }
+
+  // Botons del banner principal
+  document.getElementById("cookie-aceptar").addEventListener("click", () => {
+    guardarCookieConsent(true, true);
+    tancarBanner();
+  });
+
+  document.getElementById("cookie-rechazar").addEventListener("click", () => {
+    guardarCookieConsent(false, false);
+    tancarBanner();
+  });
+
+  document.getElementById("cookie-configurar").addEventListener("click", () => {
+    obrirPanel();
+  });
+
+  // Botons del panel de configuració
+  document.getElementById("cookie-panel-cancelar").addEventListener("click", () => {
+    tancarPanel();
+  });
+
+  document.getElementById("cookie-panel-guardar").addEventListener("click", () => {
+    const analitica = document.getElementById("cookie-check-analitica").checked;
+    const terceros = document.getElementById("cookie-check-terceros").checked;
+    guardarCookieConsent(analitica, terceros);
+    tancarPanel();
+    tancarBanner();
+  });
+
+  // Tancar panel clicant fora
+  document.getElementById("cookie-overlay").addEventListener("click", () => {
+    tancarPanel();
+  });
+
+  // Enllaç política de privacitat des del banner
+  document.getElementById("cookie-privacidad-link").addEventListener("click", () => {
+    tancarBanner();
+  });
+
+  // Gestionar cookies des del peu de pàgina (sempre actiu, fora del if)
+  const gestionarLink = document.getElementById("gestionar-cookies-link");
+  if (gestionarLink) {
+    gestionarLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (banner) banner.style.display = "flex";
+      obrirPanel();
+    });
+  }
+}
+
+// Funció per comprovar si l'usuari ha acceptat les cookies analítiques
+function cookiesAnaliticaPermeses() {
+  const consent = cookieConsentGuardat();
+  if (!consent) return false;
+  return consent.analitica === true;
+}
+
+/* ---------------------------
+   CARREGAR SDK PAYPAL DINÀMICAMENT
+   --------------------------- */
+async function carregarPaypalSDK() {
+  try {
+    const configDoc = await getDoc(doc(db, "config", "integraciones"));
+    let clientId, mode;
+
+    if (configDoc.exists()) {
+      const data = configDoc.data();
+      mode = data.paypalMode || 'live';
+      clientId = mode === 'sandbox' ? data.paypalClientIdSandbox : data.paypalClientIdLive;
+    }
+
+    // Si no hi ha config a Firestore, usar el live hardcodejat
+    if (!clientId) {
+  console.error('No hi ha client-id de PayPal configurat a Firestore');
+  return;
+}
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=EUR`;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  } catch (e) {
+    console.error('Error carregant PayPal SDK:', e);
+  }
+}
+
+// Inicialitzar el banner
+initCookieBanner();
+carregarPaypalSDK();
+
+/* ---------------------------
+   CONTROL DE STOCK
+   --------------------------- */
+async function loadStock() {
+  const contenedor = document.getElementById("stock-contenido");
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "<p>Cargando stock...</p>";
+
+  try {
+    const q = query(collection(db, "productes"), orderBy("nom"), limit(1000));
+    const snap = await getDocs(q);
+
+    const productos = [];
+    snap.forEach(d => productos.push({ _docId: d.id, ...d.data() }));
+
+    if (productos.length === 0) {
+      contenedor.innerHTML = "<p>No hay productos.</p>";
+      return;
+    }
+
+    // Construir llista de files
+    const files = [];
+    productos.forEach(p => {
+      const variants = p.variants || [];
+      if (variants.length === 0) {
+        files.push({
+          nom: p.nom || "-",
+          id: p.id || p._docId,
+          stock: "-",
+          ocult: p.ocult || false,
+          variantNom: ""
+        });
+      } else {
+        variants.forEach(v => {
+          files.push({
+            nom: p.nom || "-",
+            id: p.id || p._docId,
+            stock: v.stock ?? "-",
+            ocult: p.ocult || false,
+            variantNom: v.nom || ""
+          });
+        });
+      }
+    });
+
+    // Estat d'ordenació
+    let sortCol = "nom";
+    let sortDir = 1; // 1 = ascendent, -1 = descendent
+
+    function sortFiles() {
+      files.sort((a, b) => {
+        let va = a[sortCol];
+        let vb = b[sortCol];
+
+        // Tractar "-" com a -1 per ordenar numèricament
+        if (sortCol === "stock") {
+          va = va === "-" ? -1 : Number(va);
+          vb = vb === "-" ? -1 : Number(vb);
+          return (va - vb) * sortDir;
+        }
+
+        if (sortCol === "ocult") {
+          va = va ? 1 : 0;
+          vb = vb ? 1 : 0;
+          return (va - vb) * sortDir;
+        }
+
+        // Ordenació alfabètica
+        return String(va).localeCompare(String(vb), 'es') * sortDir;
+      });
+    }
+
+    function fletxa(col) {
+      if (sortCol !== col) return '<span style="color:#ccc; margin-left:4px;">↕</span>';
+      return sortDir === 1
+        ? '<span style="margin-left:4px;">↑</span>'
+        : '<span style="margin-left:4px;">↓</span>';
+    }
+
+    function renderTaula() {
+      sortFiles();
+
+      const stockBaix = files.filter(f => typeof f.stock === "number" && f.stock <= 2).length;
+      const productesUnics = [...new Set(files.map(f => f.id))];
+      const totalProductes = productesUnics.length;
+      const visibles = productos.filter(p => !p.ocult).length;
+      const ocults = productos.filter(p => p.ocult).length;
+
+      const thStyle = `padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8; cursor:pointer; user-select:none; white-space:nowrap;`;
+      const thCenterStyle = `padding:10px 12px; text-align:center; border-bottom:2px solid #e0c8d8; cursor:pointer; user-select:none; white-space:nowrap;`;
+
+      contenedor.innerHTML = `
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-bottom:2rem;">
+          <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color:#c0618a;">${totalProductes}</div>
+            <div style="color:#666; margin-top:0.5rem;">Productos totales</div>
+          </div>
+          <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color:#c0618a;">${visibles}</div>
+            <div style="color:#666; margin-top:0.5rem;">Visibles</div>
+          </div>
+          <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color:#c0618a;">${ocults}</div>
+            <div style="color:#666; margin-top:0.5rem;">Ocultos</div>
+          </div>
+          <div style="background:${stockBaix > 0 ? '#fff0f0' : '#f8f0f5'}; border-radius:12px; padding:1.5rem; text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color:${stockBaix > 0 ? '#e74c3c' : '#c0618a'};">${stockBaix}</div>
+            <div style="color:#666; margin-top:0.5rem;">Stock bajo (≤2 uds)</div>
+          </div>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+          <thead>
+            <tr style="background:#f8f0f5;">
+              <th data-col="nom" style="${thStyle}">Nombre ${fletxa('nom')}</th>
+              <th data-col="variantNom" style="${thStyle}">Variante ${fletxa('variantNom')}</th>
+              <th data-col="id" style="${thStyle}">ID ${fletxa('id')}</th>
+              <th data-col="stock" style="${thCenterStyle}">Stock ${fletxa('stock')}</th>
+              <th data-col="ocult" style="${thCenterStyle}">Estado ${fletxa('ocult')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${files.map(f => `
+              <tr style="border-bottom:1px solid #f0e0ea; ${typeof f.stock === 'number' && f.stock <= 2 ? 'background:#fff8f8;' : ''}">
+                <td style="padding:10px 12px; font-weight:500;">${escapeHtml(f.nom)}</td>
+                <td style="padding:10px 12px; color:#888;">${escapeHtml(f.variantNom)}</td>
+                <td style="padding:10px 12px; color:#aaa; font-size:0.8rem;">${escapeHtml(String(f.id))}</td>
+                <td style="padding:10px 12px; text-align:center; font-weight:700; color:${typeof f.stock === 'number' && f.stock <= 2 ? '#e74c3c' : '#333'};">
+                  ${f.stock}
+                </td>
+                <td style="padding:10px 12px; text-align:center;">
+                  <span style="background:${f.ocult ? '#f0e0ea' : '#e8f5e9'}; color:${f.ocult ? '#c0618a' : '#2e7d32'}; padding:3px 10px; border-radius:20px; font-size:0.8rem; font-weight:500;">
+                    ${f.ocult ? 'Oculto' : 'Visible'}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // Afegir event listeners a les capçaleres
+      contenedor.querySelectorAll("th[data-col]").forEach(th => {
+        th.addEventListener("click", () => {
+          const col = th.dataset.col;
+          if (sortCol === col) {
+            sortDir *= -1;
+          } else {
+            sortCol = col;
+            sortDir = 1;
+          }
+          renderTaula();
+        });
+      });
+    }
+
+    renderTaula();
+
+  } catch (e) {
+    contenedor.innerHTML = `<p>Error cargando stock: ${e.message}</p>`;
+  }
+}
+
+/* ---------------------------
+   PEDIDOS ABIERTOS
+   --------------------------- */
+async function loadPedidos() {
+  const contenedor = document.getElementById("pedidos-contenido");
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "<p>Cargando pedidos...</p>";
+
+  try {
+    const snap = await getDocs(query(
+      collection(db, "comandas"),
+      orderBy("fecha", "desc")
+    ));
+
+    const pedidos = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.estado === "pendiente") {
+        pedidos.push({ _docId: d.id, ...data });
+      }
+    });
+
+    if (pedidos.length === 0) {
+      contenedor.innerHTML = `
+        <div style="text-align:center; padding:3rem; color:#888;">
+          <div style="font-size:3rem;">✅</div>
+          <p>No hay pedidos pendientes de enviar.</p>
+        </div>
+      `;
+      return;
+    }
+
+    contenedor.innerHTML = `
+      <div style="display:flex; gap:1rem; align-items:center; margin-bottom:2rem; flex-wrap:wrap;">
+        <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#c0618a;">${pedidos.length}</div>
+          <div style="color:#666; margin-top:0.5rem;">Pedidos pendientes</div>
+        </div>
+        <button onclick="eliminarTodosPedidos('pendiente')" 
+          style="background:#fff0f0; color:#dc3545; border:1px solid #dc3545; padding:0.6rem 1.2rem; border-radius:8px; cursor:pointer; font-size:0.9rem;">
+          🗑️ Eliminar todos
+        </button>
+      </div>
+
+      <div id="pedidos-lista">
+        ${pedidos.map(p => renderPedidoCard(p, 'pendiente')).join('')}
+      </div>
+    `;
+
+  } catch (e) {
+    contenedor.innerHTML = `<p>Error cargando pedidos: ${e.message}</p>`;
+  }
+}
+
+/* ---------------------------
+   PEDIDOS ENVIADOS
+   --------------------------- */
+async function loadPedidosEnviados() {
+  const contenedor = document.getElementById("pedidos-enviados-contenido");
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "<p>Cargando pedidos...</p>";
+
+  try {
+    const snap = await getDocs(query(
+      collection(db, "comandas"),
+      orderBy("fecha", "desc")
+    ));
+
+    const pedidos = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.estado === "enviado") {
+        pedidos.push({ _docId: d.id, ...data });
+      }
+    });
+
+    if (pedidos.length === 0) {
+      contenedor.innerHTML = `
+        <div style="text-align:center; padding:3rem; color:#888;">
+          <div style="font-size:3rem;">📭</div>
+          <p>No hay pedidos enviados.</p>
+        </div>
+      `;
+      return;
+    }
+
+    contenedor.innerHTML = `
+      <div style="display:flex; gap:1rem; align-items:center; margin-bottom:2rem; flex-wrap:wrap;">
+        <div style="background:#f0f8f0; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#28a745;">${pedidos.length}</div>
+          <div style="color:#666; margin-top:0.5rem;">Pedidos enviados</div>
+        </div>
+        <button onclick="eliminarTodosPedidos('enviado')" 
+          style="background:#fff0f0; color:#dc3545; border:1px solid #dc3545; padding:0.6rem 1.2rem; border-radius:8px; cursor:pointer; font-size:0.9rem;">
+          🗑️ Eliminar todos
+        </button>
+      </div>
+
+      <div id="pedidos-enviados-lista">
+        ${pedidos.map(p => renderPedidoCard(p, 'enviado')).join('')}
+      </div>
+    `;
+
+  } catch (e) {
+    contenedor.innerHTML = `<p>Error cargando pedidos: ${e.message}</p>`;
+  }
+}
+
+/* ---------------------------
+   RENDER TARGETA PEDIDO
+   --------------------------- */
+function renderPedidoCard(p, tipus) {
+  const fecha = p.fecha?.toDate ? p.fecha.toDate().toLocaleDateString('es-ES') : '-';
+  const nombre = `${p.cliente?.nombre || ''} ${p.cliente?.apellidos || ''}`.trim();
+  const direccion = [
+    p.cliente?.direccion,
+    p.cliente?.infoAdicional,
+    `${p.cliente?.codigoPostal || ''} ${p.cliente?.ciudad || ''}`,
+    p.cliente?.pais
+  ].filter(Boolean).join(', ');
+
+  const productosTexto = (p.productos || []).map(pr =>
+    `${pr.nombre} (${pr.variante}) x${pr.cantidad}`
+  ).join('<br>');
+
+  const refCurta = p._docId.slice(-8).toUpperCase();
+
+  const seguimientoBlock = tipus === 'pendiente' ? `
+    <div style="border-top:1px solid #f0e0ea; padding-top:1rem; display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+      <input 
+        id="tracking-${p._docId}" 
+        type="text" 
+        placeholder="Número de seguimiento de Correos" 
+        style="flex:1; min-width:200px; padding:0.6rem 1rem; border:1px solid #ddd; border-radius:8px; font-size:0.9rem;"
+      >
+      <button 
+        onclick="enviarSeguimiento('${p._docId}', '${escapeAttr(p.cliente?.email || '')}', '${escapeAttr(nombre)}', '${refCurta}')"
+        style="background:#c0618a; color:white; border:none; padding:0.6rem 1.5rem; border-radius:8px; cursor:pointer; font-size:0.9rem; white-space:nowrap;"
+      >
+        📦 Enviar seguimiento
+      </button>
+      <button 
+        onclick="eliminarPedido('${p._docId}', 'pendiente')"
+        style="background:#fff0f0; color:#dc3545; border:1px solid #dc3545; padding:0.6rem 1rem; border-radius:8px; cursor:pointer; font-size:0.9rem;"
+      >
+        🗑️
+      </button>
+    </div>
+  ` : `
+    <div style="border-top:1px solid #e0f0e0; padding-top:1rem; display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+      <div style="flex:1; background:#f0f8f0; border-radius:8px; padding:0.6rem 1rem; font-size:0.9rem;">
+        📦 Nº seguimiento: <strong>${p.numeroSeguimiento || '-'}</strong>
+        <a href="https://www.correos.es/es/es/herramientas/localizador/envios/detalle?id=${p.numeroSeguimiento}" 
+           target="_blank" style="color:#c0618a; margin-left:1rem; font-size:0.85rem;">Ver en Correos →</a>
+      </div>
+      <button 
+        onclick="eliminarPedido('${p._docId}', 'enviado')"
+        style="background:#fff0f0; color:#dc3545; border:1px solid #dc3545; padding:0.6rem 1rem; border-radius:8px; cursor:pointer; font-size:0.9rem;"
+      >
+        🗑️
+      </button>
+    </div>
+  `;
+
+  return `
+    <div id="pedido-${p._docId}" style="background:white; border:1px solid ${tipus === 'pendiente' ? '#f0e0ea' : '#e0f0e0'}; border-radius:12px; padding:1.5rem; margin-bottom:1rem;">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem;">
+        <div>
+          <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Referencia</div>
+          <div style="font-weight:700; color:#c0618a;">#${refCurta}</div>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Fecha</div>
+          <div>${fecha}</div>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Cliente</div>
+          <div style="font-weight:500;">${escapeHtml(nombre)}</div>
+          <div style="font-size:0.85rem; color:#888;">${escapeHtml(p.cliente?.email || '')}</div>
+          <div style="font-size:0.85rem; color:#888;">${escapeHtml(p.cliente?.telefono || '')}</div>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Dirección de envío</div>
+          <div style="font-size:0.85rem;">${escapeHtml(direccion)}</div>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Productos</div>
+          <div style="font-size:0.85rem;">${productosTexto}</div>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Total</div>
+          <div style="font-weight:700; font-size:1.1rem;">${formatPrice(p.totals?.total || 0)}</div>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Cupón generado</div>
+          <div style="font-size:0.85rem; font-weight:600; color:#28a745;">
+            ${p.cuponGenerado ? p.cuponGenerado.codigo + ' (' + p.cuponGenerado.descuento + '%)' : 'Sin cupón'}
+          </div>
+        </div>
+      </div>
+      ${seguimientoBlock}
+    </div>
+  `;
+}
+
+/* ---------------------------
+   ELIMINAR PEDIDO INDIVIDUAL
+   --------------------------- */
+async function eliminarPedido(docId, tipus) {
+  if (!confirm('¿Eliminar este pedido del registro?')) return;
+
+  try {
+    await deleteDoc(doc(db, "comandas", docId));
+    const pedidoEl = document.getElementById(`pedido-${docId}`);
+    if (pedidoEl) pedidoEl.remove();
+    alert('✅ Pedido eliminado correctamente.');
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message);
+  }
+}
+
+/* ---------------------------
+   ELIMINAR TOTS ELS PEDIDOS
+   --------------------------- */
+async function eliminarTodosPedidos(estat) {
+  const msg = estat === 'pendiente' ? 'todos los pedidos pendientes' : 'todos los pedidos enviados';
+  if (!confirm(`¿Eliminar ${msg} del registro? Esta acción no se puede deshacer.`)) return;
+
+  try {
+    const snap = await getDocs(query(collection(db, "comandas")));
+    const batch = [];
+    snap.forEach(d => {
+      if (d.data().estado === estat) {
+        batch.push(deleteDoc(doc(db, "comandas", d.id)));
+      }
+    });
+    await Promise.all(batch);
+
+    if (estat === 'pendiente') loadPedidos();
+    else loadPedidosEnviados();
+
+    alert(`✅ Pedidos eliminados correctamente.`);
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message);
+  }
+}
+
+async function enviarSeguimiento(docId, email, nombre, referencia) {
+  const trackingInput = document.getElementById(`tracking-${docId}`);
+  const trackingNumber = trackingInput?.value.trim();
+
+  if (!trackingNumber) {
+    alert("Por favor, introduce el número de seguimiento.");
+    return;
+  }
+
+  if (!confirm(`¿Enviar el número de seguimiento ${trackingNumber} al cliente ${nombre}?`)) return;
+
+  try {
+    const response = await fetch('https://miuartclientes.netlify.app/.netlify/functions/enviar-seguimiento', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        client_name: nombre,
+        order_id: referencia,
+        tracking_number: trackingNumber
+      })
+    });
+
+    if (!response.ok) throw new Error('Error al enviar el email');
+
+    await updateDoc(doc(db, "comandas", docId), {
+      estado: "enviado",
+      numeroSeguimiento: trackingNumber,
+      fechaEnvio: new Date()
+    });
+
+    const pedidoEl = document.getElementById(`pedido-${docId}`);
+    if (pedidoEl) pedidoEl.remove();
+
+    const llista = document.getElementById("pedidos-lista");
+    if (llista && llista.children.length === 0) {
+      llista.innerHTML = `
+        <div style="text-align:center; padding:3rem; color:#888;">
+          <div style="font-size:3rem;">✅</div>
+          <p>No hay pedidos pendientes de enviar.</p>
+        </div>
+      `;
+    }
+
+    alert(`✅ Número de seguimiento enviado correctamente a ${email}`);
+
+  } catch (e) {
+    alert("Error al enviar el seguimiento: " + e.message);
+  }
+}
+
+window.enviarSeguimiento = enviarSeguimiento;
+window.eliminarPedido = eliminarPedido;
+window.eliminarTodosPedidos = eliminarTodosPedidos;
+
+/* ---------------------------
+   INTEGRACIONES
+   --------------------------- */
+async function loadIntegraciones() {
+  const contenedor = document.getElementById("integraciones-contenido");
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "<p>Cargando...</p>";
+
+  try {
+    const configDoc = await getDoc(doc(db, "config", "integraciones"));
+    const data = configDoc.exists() ? configDoc.data() : {};
+
+    const mode = data.paypalMode || 'live';
+
+    contenedor.innerHTML = `
+      <div style="max-width:600px;">
+        <div style="background:white; border:1px solid #f0e0ea; border-radius:12px; padding:1.5rem; margin-bottom:1.5rem;">
+          <h3 style="color:#c0618a; margin-top:0;">💳 PayPal</h3>
+          
+          <div style="margin-bottom:1rem;">
+            <label style="display:block; font-size:0.85rem; color:#666; margin-bottom:4px;">Client-ID Live</label>
+            <input 
+              id="paypal-live-id" 
+              type="text" 
+              value="${data.paypalClientIdLive || ''}"
+              style="width:100%; padding:0.6rem 1rem; border:1px solid #ddd; border-radius:8px; font-size:0.9rem; box-sizing:border-box;"
+              placeholder="Introduce el Client-ID de producción"
+            >
+          </div>
+
+          <div style="margin-bottom:1.5rem;">
+            <label style="display:block; font-size:0.85rem; color:#666; margin-bottom:4px;">Client-ID Sandbox</label>
+            <input 
+              id="paypal-sandbox-id" 
+              type="text" 
+              value="${data.paypalClientIdSandbox || ''}"
+              style="width:100%; padding:0.6rem 1rem; border:1px solid #ddd; border-radius:8px; font-size:0.9rem; box-sizing:border-box;"
+              placeholder="Introduce el Client-ID de sandbox"
+            >
+          </div>
+
+          <div style="margin-bottom:1.5rem;">
+            <label style="display:block; font-size:0.85rem; color:#666; margin-bottom:8px;">Modo activo</label>
+            <div style="display:flex; gap:1rem;">
+              <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="radio" name="paypal-mode" value="live" ${mode === 'live' ? 'checked' : ''}>
+                <span style="font-weight:${mode === 'live' ? '700' : '400'}; color:${mode === 'live' ? '#28a745' : '#666'};">🟢 Live (Producción)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="radio" name="paypal-mode" value="sandbox" ${mode === 'sandbox' ? 'checked' : ''}>
+                <span style="font-weight:${mode === 'sandbox' ? '700' : '400'}; color:${mode === 'sandbox' ? '#f0ad4e' : '#666'};">🟡 Sandbox (Pruebas)</span>
+              </label>
+            </div>
+          </div>
+
+          <button 
+            onclick="guardarIntegraciones()"
+            style="background:#c0618a; color:white; border:none; padding:0.6rem 1.5rem; border-radius:8px; cursor:pointer; font-size:0.9rem;"
+          >
+            💾 Guardar configuración
+          </button>
+
+          ${mode === 'sandbox' ? `
+            <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:8px; padding:1rem; margin-top:1rem;">
+              ⚠️ <strong>Modo Sandbox activo.</strong> Los pagos son de prueba y no se cobrarán.
+            </div>
+          ` : `
+            <div style="background:#d4edda; border:1px solid #28a745; border-radius:8px; padding:1rem; margin-top:1rem;">
+              ✅ <strong>Modo Live activo.</strong> Los pagos son reales.
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+
+  } catch (e) {
+    contenedor.innerHTML = `<p>Error: ${e.message}</p>`;
+  }
+}
+
+async function guardarIntegraciones() {
+  const liveId = document.getElementById('paypal-live-id')?.value.trim();
+  const sandboxId = document.getElementById('paypal-sandbox-id')?.value.trim();
+  const mode = document.querySelector('input[name="paypal-mode"]:checked')?.value;
+
+  if (!liveId || !sandboxId) {
+    alert('Por favor, introduce los dos Client-IDs de PayPal.');
+    return;
+  }
+
+  try {
+    await setDoc(doc(db, "config", "integraciones"), {
+      paypalClientIdLive: liveId,
+      paypalClientIdSandbox: sandboxId,
+      paypalMode: mode
+    });
+
+    alert('✅ Configuración guardada correctamente. Recarga la página para aplicar los cambios.');
+    loadIntegraciones();
+  } catch (e) {
+    alert('Error al guardar: ' + e.message);
+  }
+}
+
+window.guardarIntegraciones = guardarIntegraciones;
 
 window._miuart = {
   db, auth, loadProducts, loadHeaderImages, loadHeaderImagesDetalle, carrito, saveCart, showCartPopup, showAddressForm

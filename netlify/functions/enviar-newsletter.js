@@ -7,6 +7,7 @@ if (!admin.apps.length) {
   admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 }
 
+// Aquesta funció s’executa mensualment o manualment
 exports.handler = async (event) => {
   console.log("📬 Iniciant enviament de newsletter MiUArt...");
 
@@ -53,7 +54,6 @@ exports.handler = async (event) => {
       <p style="font-size:16px; color:#444;">Descubre las últimas incorporaciones de nuestra colección MiUArt</p>
 
       <div style="margin-top:40px;">${productesHTML}</div>
-
       <div style="margin-top:40px;">${promoHTML}</div>
 
       <div style="text-align:center; margin-top:40px;">
@@ -65,30 +65,49 @@ exports.handler = async (event) => {
 
       <footer style="margin-top:50px; font-size:12px; color:#888;">
         <p>©️ 2025 MiUArt. Todos los derechos reservados.</p>
+        <p style="margin-top:10px;">
+          Si no vols rebre més novetats, fes clic aquí per <a href="https://botigamiuart.netlify.app/.netlify/functions/desuscribirse?email={{email}}" style="color:#e9acc8;">donar-te de baixa</a>.
+        </p>
       </footer>
     </div>`;
 
-    // === 5️⃣ Enviar el correu via Brevo ===
-    const brevoResponse = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "api-key": process.env.BREVO_API_KEY,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        sender: { name: "MiUArt", email: process.env.BREVO_SENDER },
-        to: [{ email: "miuartclientes@gmail.com" }], // 🔹 per proves; després canvia a subscriptors
-        subject: "🩷 Novedades de este mes en MiUArt",
-        htmlContent: html,
-      }),
-    });
+    // === 5️⃣ Llegir subscriptors de Firebase ===
+    const subsSnap = await db.collection("clients").where("volNewsletter", "==", true).get();
+    const subscriptors = subsSnap.docs.map(doc => ({ email: doc.data().email, id: doc.id })).filter(s => s.email);
 
-    const data = await brevoResponse.json();
-    if (!brevoResponse.ok) throw new Error(JSON.stringify(data));
+    if (subscriptors.length === 0) {
+      console.log("⚠️ No hi ha subscriptors actius per enviar el newsletter");
+      return { statusCode: 200, body: JSON.stringify({ success: true, message: "No subscriptors actius" }) };
+    }
 
-    console.log("✅ Newsletter enviat correctament!");
-    return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    console.log(`📧 Enviant a ${subscriptors.length} subscriptors...`);
+
+    // === 6️⃣ Enviar el correu via Brevo ===
+    for (const sub of subscriptors) {
+      const htmlFinal = html.replace("{{email}}", encodeURIComponent(sub.email));
+
+      const brevoResponse = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "api-key": process.env.BREVO_API_KEY,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: { name: "MiUArt", email: process.env.BREVO_SENDER },
+          to: [{ email: sub.email }],
+          subject: "🩷 Novedades de este mes en MiUArt",
+          htmlContent: htmlFinal,
+        }),
+      });
+
+      const data = await brevoResponse.json();
+      if (!brevoResponse.ok) console.error(`❌ Error enviant a ${sub.email}:`, data);
+    }
+
+    console.log("✅ Newsletter enviat correctament a tots els subscriptors!");
+    return { statusCode: 200, body: JSON.stringify({ success: true, sent: subscriptors.length }) };
+
   } catch (err) {
     console.error("💥 Error enviant newsletter:", err);
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };

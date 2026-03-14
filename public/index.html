@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
   <title>Miuart</title>
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dhfywi5e8/image/upload/v1772664153/Imagen_Logo_Favicon_h9wiil.png">
+  <link rel="apple-touch-icon" href="https://res.cloudinary.com/dhfywi5e8/image/upload/v1772664153/Imagen_Logo_Favicon_h9wiil.png">
 </head>
 <body>
   <div id="slider-promocional" class="slider-promocional">
@@ -17,7 +19,6 @@
     <div class="header-left">
       <div class="search-bar">
         <input id="search-input" type="search" placeholder="Buscar productos...">
-        <!-- NOU: Pop-up de resultats de cerca -->
         <div id="search-results-popup" class="search-results-popup">
           <div class="search-results-content" id="search-results-content"></div>
         </div>
@@ -35,10 +36,16 @@
           <li><a href="#inicio">Inicio</a></li>
           <li><a href="#tienda">Tienda</a></li>
           <li><a href="#quienes-somos">Quiénes somos</a></li>
+          <li><a href="#promociones">Promociones</a></li>
           <li><a href="#contacto">Contacto</a></li>
           <li id="agregar-producto-link" style="display:none;"><a href="#agregar-producto">Agregar producto</a></li>
           <li id="imagenes-cabecera-link" style="display:none;"><a href="#imagenes-cabecera">Imágenes cabecera</a></li>
           <li id="configuracion-link" style="display:none;"><a href="#configuracion">Configuración</a></li>
+          <li id="estadisticas-link" style="display:none;"><a href="#estadisticas">Estadísticas</a></li>
+          <li id="stock-link" style="display:none;"><a href="#stock">Control de Stock</a></li>
+          <li id="pedidos-link" style="display:none;"><a href="#pedidos">Pedidos Abiertos</a></li>
+          <li id="pedidos-enviados-link" style="display:none;"><a href="#pedidos-enviados">Pedidos Enviados</a></li>
+          <li id="integraciones-link" style="display:none;"><a href="#integraciones">Integraciones</a></li>
           <li><a id="auth-link-a" href="#login-section">Login</a> <span id="usuario-info" class="usuario-info"></span></li>
         </ul>
       </nav>
@@ -54,7 +61,6 @@
   </div>
 
   <main>
-    <!-- NOU: Breadcrumb Navigation -->
     <nav id="breadcrumb" class="breadcrumb" aria-label="Breadcrumb">
       <ol class="breadcrumb-list">
         <li class="breadcrumb-item">
@@ -64,7 +70,6 @@
     </nav>
 
     <section id="inicio" class="pagina active">
-      <!-- NOU: Eliminat el hero i afegides dues noves imatges -->
       <div class="home-images-container">
         <div class="home-image-section">
           <div class="home-image-wrapper">
@@ -82,12 +87,11 @@
             </div>
           </div>
         </div>
-        <!-- NOU: Afegides dues imatges addicionals -->
         <div class="home-image-section">
           <div class="home-image-wrapper">
             <img id="imagen-especialidad" src="" alt="Especialidad">
             <div class="home-image-overlay">
-              <button class="btn primary home-image-btn" onclick="location.hash='#tienda'">Nuestra especialidad</button>
+              <button class="btn primary home-image-btn" onclick="location.hash='#nuestra-especialidad'">Nuestra especialidad</button>
             </div>
           </div>
         </div>
@@ -95,14 +99,33 @@
           <div class="home-image-wrapper">
             <img id="imagen-promocion" src="" alt="Promoción">
             <div class="home-image-overlay">
-              <button class="btn primary home-image-btn" onclick="location.hash='#tienda'">Promociones</button>
+              <button class="btn primary home-image-btn" onclick="location.hash='#promociones'">Promociones</button>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- NOU: Secció de novedades -->
+    <section id="promociones" class="pagina">
+      <h2>Promociones</h2>
+      <div class="promociones-container">
+        <div class="promociones-grid">
+          <div class="promocion-item">
+            <img id="promocion-img-1" src="" alt="Promoción 1">
+          </div>
+          <div class="promocion-item">
+            <img id="promocion-img-2" src="" alt="Promoción 2">
+          </div>
+          <div class="promocion-item">
+            <img id="promocion-img-3" src="" alt="Promoción 3">
+          </div>
+          <div class="promocion-item">
+            <img id="promocion-img-4" src="" alt="Promoción 4">
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="novedades" class="pagina">
       <div class="tienda-container">
         <h2>Novedades</h2>
@@ -117,11 +140,31 @@
       </div>
     </section>
 
+    <section id="nuestra-especialidad" class="pagina">
+      <h2>Nuestra Especialidad</h2>
+      <div class="nuestra-especialidad-container">
+        <div class="nuestra-especialidad-content">
+          <div class="nuestra-especialidad-texto">
+            <h3 id="nuestra-especialidad-titulo"></h3>
+            <p id="nuestra-especialidad-texto"></p>
+          </div>
+          <div class="nuestra-especialidad-imagenes">
+            <div class="nuestra-especialidad-slider">
+              <img id="nuestra-especialidad-img-1" src="" alt="Especialidad 1">
+              <img id="nuestra-especialidad-img-2" src="" alt="Especialidad 2">
+              <img id="nuestra-especialidad-img-3" src="" alt="Especialidad 3">
+              <img id="nuestra-especialidad-img-4" src="" alt="Especialidad 4">
+              <img id="nuestra-especialidad-img-5" src="" alt="Especialidad 5">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="carrito" class="pagina">
       <h2>Tu carrito</h2>
       <div class="carrito-list" id="carrito-contenido"></div>
       
-      <!-- NOU: Secció per al codi de descompte -->
       <div class="cupon-section">
         <div class="cupon-container">
           <label for="cupon-input">Código de descuento</label>
@@ -144,16 +187,14 @@
       </div>
       <div id="direccion-form-container"></div>
 
-      <!-- ✅ Checkbox per subscriure's a la newsletter -->
       <div class="newsletter-consent">
         <label>
           <input type="checkbox" id="newsletterCheck">
-          Vull rebre novetats i ofertes de MiUArt per correu electrònic
+          Quiero recibir novedades y ofertas de Miuart por correo electrónico
         </label>
      </div>
 
      </section>
-
 
     <section id="login-section" class="pagina">
       <h2>Iniciar sesión</h2>
@@ -195,19 +236,16 @@
         <label for="video-url">URL video (Cloudinary)</label>
         <input id="video-url" type="url" placeholder="https://res.cloudinary.com/...">
         
-        <!-- NOU: Camps per a les imatges de la home -->
         <label for="imagen-novedades-url">URL imagen novedades (Cloudinary)</label>
         <input id="imagen-novedades-url" type="url" placeholder="https://res.cloudinary.com/...">
         <label for="imagen-coleccion-url">URL imagen colección (Cloudinary)</label>
         <input id="imagen-coleccion-url" type="url" placeholder="https://res.cloudinary.com/...">
         
-        <!-- NOU: Camps addicionals per a les noves imatges -->
         <label for="imagen-especialidad-url">URL imagen especialidad (Cloudinary)</label>
         <input id="imagen-especialidad-url" type="url" placeholder="https://res.cloudinary.com/...">
         <label for="imagen-promocion-url">URL imagen promoción (Cloudinary)</label>
         <input id="imagen-promocion-url" type="url" placeholder="https://res.cloudinary.com/...">
         
-        <!-- NOU: Camps per a "Quiénes somos" -->
         <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Sección "Quiénes somos"</h3>
         <label for="imagen-quienes-somos">URL imagen quienes somos (Cloudinary)</label>
         <input id="imagen-quienes-somos" type="url" placeholder="https://res.cloudinary.com/...">
@@ -216,7 +254,32 @@
         <label for="texto-quienes-somos">Texto quienes somos</label>
         <textarea id="texto-quienes-somos" rows="4" placeholder="Texto descriptivo para la sección quienes somos"></textarea>
         
-        <!-- NOU: Configuració de descomptes -->
+        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Sección "Nuestra Especialidad"</h3>
+        <label for="imagen-especialidad-1">URL imagen 1 nuestra especialidad (Cloudinary)</label>
+        <input id="imagen-especialidad-1" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="imagen-especialidad-2">URL imagen 2 nuestra especialidad (Cloudinary)</label>
+        <input id="imagen-especialidad-2" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="imagen-especialidad-3">URL imagen 3 nuestra especialidad (Cloudinary)</label>
+        <input id="imagen-especialidad-3" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="imagen-especialidad-4">URL imagen 4 nuestra especialidad (Cloudinary)</label>
+        <input id="imagen-especialidad-4" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="imagen-especialidad-5">URL imagen 5 nuestra especialidad (Cloudinary)</label>
+        <input id="imagen-especialidad-5" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="titulo-nuestra-especialidad">Título texto nuestra especialidad</label>
+        <input id="titulo-nuestra-especialidad" type="text" placeholder="Título para la sección">
+        <label for="texto-nuestra-especialidad">Texto nuestra especialidad</label>
+        <textarea id="texto-nuestra-especialidad" rows="4" placeholder="Texto descriptivo para la sección nuestra especialidad"></textarea>
+        
+        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Sección "Promociones"</h3>
+        <label for="imagen-promociones-1">URL imagen 1 promociones (Cloudinary)</label>
+        <input id="imagen-promociones-1" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="imagen-promociones-2">URL imagen 2 promociones (Cloudinary)</label>
+        <input id="imagen-promociones-2" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="imagen-promociones-3">URL imagen 3 promociones (Cloudinary)</label>
+        <input id="imagen-promociones-3" type="url" placeholder="https://res.cloudinary.com/...">
+        <label for="imagen-promociones-4">URL imagen 4 promociones (Cloudinary)</label>
+        <input id="imagen-promociones-4" type="url" placeholder="https://res.cloudinary.com/...">
+        
         <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Configuración de Descuentos</h3>
         <label for="promocion-compra-superior">Promoción compra superior a (€)</label>
         <input id="promocion-compra-superior" type="number" step="0.01" min="0" placeholder="Ej: 100">
@@ -234,6 +297,31 @@
       </form>
     </section>
 
+    <section id="estadisticas" class="pagina">
+      <h2>Estadísticas</h2>
+      <div id="estadisticas-contenido"></div>
+    </section>
+
+    <section id="stock" class="pagina">
+      <h2>Control de Stock</h2>
+      <div id="stock-contenido"></div>
+    </section>
+
+   <section id="pedidos" class="pagina">
+     <h2>Pedidos Abiertos</h2>
+     <div id="pedidos-contenido"></div>
+   </section>
+
+   <section id="pedidos-enviados" class="pagina">
+     <h2>Pedidos Enviados</h2>
+     <div id="pedidos-enviados-contenido"></div>
+   </section>
+
+   <section id="integraciones" class="pagina">
+     <h2>Integraciones</h2>
+     <div id="integraciones-contenido"></div>
+   </section>
+
     <section id="detalle-producto" class="pagina">
       <div class="cabecera-tienda-slider" id="cabecera-slider-detalle"></div>
       <div id="detalle-contenido"></div>
@@ -241,7 +329,6 @@
 
     <section id="quienes-somos" class="pagina">
       <h2>Quiénes somos</h2>
-      <!-- NOU: Estructura millorada de "Quiénes somos" -->
       <div class="quienes-somos-container">
         <div class="quienes-somos-content">
           <div class="quienes-somos-texto">
@@ -273,23 +360,122 @@
     </section>
 
     <section id="envio-devoluciones" class="pagina">
-      <h2>Envío y devoluciones</h2>
-      <p>Aquí va el texto sobre las políticas de envío y devoluciones.</p>
+      <h2>Envío y Devoluciones</h2>
+      <div class="content">
+        <h3>Política de Envío</h3>
+        <p>Realizamos envíos únicamente en España, incluyendo Península, Baleares y Canarias.
+           Los pedidos realizados antes de las 14:00 se preparan el mismo día, siempre que el producto esté disponible.
+           Algunos artículos necesitan ser fabricados y el plazo de producción es de 7 - 10 días laborables.
+           El plazo de entrega habitual es de 24-48 horas laborables (puede variar en Baleares y Canarias).</p>
+        
+        <h3>Costes de Envío</h3>
+        <ul>
+          <li>Envío estándar: 6,50 €</li>
+          <li>Envío gratis en pedidos superiores a 35,00 €</li>
+        </ul>
+        
+        <h3>Política de Devoluciones</h3>
+        <p>El cliente dispone de 14 días naturales desde la recepción del pedido para ejercer el derecho de desistimiento.<p>
+
+        <p>Productos de uso higiénico (pendientes):<br>
+           Los pendientes se envían avec precinto higiénico individual.
+           Por motivos de higiene y seguridad, no se aceptan devoluciones si el precinto está roto, abierto o manipulado.
+           Solo se aceptarán devoluciones de pendientes con el precinto completamente intacto.
+           Las devoluciones por defectos de fabricación se aceptan siempre, aunque el producto esté abierto.<p>
+        
+        <h3>Proceso de Devolución</h3>
+        <ol>
+          <li>Contacta con nuestro servicio de atención al cliente dentro del plazo de 14 días.</li>
+          <li>Te enviaremos las instrucciones y, si corresponde, una etiqueta de devolución.</li>
+          <li>El producto debe enviarse bien protegido y con el precinto higiénico sin abrir.</li>
+          <li>Una vez recibido y comprobado, el reembolso se efectuará en 5-7 días laborables.</li>
+        </ol>
+      </div>
     </section>
 
     <section id="terminos-condiciones" class="pagina">
-      <h2>Términos y condiciones</h2>
-      <p>Aquí va el texto sobre los términos y condiciones del servicio.</p>
+      <h2>Términos y Condiciones</h2>
+      <div class="content">
+        <h3>1. Aceptación de los Términos</h3>
+        <p>Al acceder a este sitio web y realizar un pedido, aceptas estos términos y condiciones. Si no estás de acuerdo, no debes utilizar la tienda ni realizar compras.</p>
+        
+        <h3>2. Información del Negocio</h3>
+        <p><strong>Miuart</strong><br>
+        Email: contacto@miuart.com<br>
+        La actividad consiste en la venta online de pendientes y otros productos artesanales.<p>
+        
+        <h3>3. Proceso de Compra</h3>
+        <p>Los precios incluyen IVA. Tras completar tu pedido, recibirás un email de confirmación. Podemos cancelar pedidos en caso de error evidente en el precio, falta de stock o indicios de fraude en el pago. En estos casos, el pedido no se procesará y no se realizará ningún cargo definitivo.</p>
+        
+        <h3>4. Disponibilidad y Producción</h3>
+        <p>Algunos artículos requieren fabricación manual con un plazo estimado de 7–10 días laborables. Si hubiera retrasos significativos, te lo notificaremos.</p>
+
+        <h3>5. Propiedad Intelectual</h3>
+        <p>Todos los contenidos del sitio (diseños, fotografías, textos y productos) son propiedad de Miuart y no pueden reproducirse ni utilizarse sin autorización expresa.</p>
+        
+        <h3>6. Responsabilidad</h3>
+        <p>No nos hacemos responsables de daños derivados de un uso incorrecto de los productos o de fallos temporales del sitio web por causas técnicas ajenas a nuestro control.</p>
+     
+        <h3>7. Protección de Datos</h3>
+        <p>Los datos personales se usan únicamente para gestionar pedidos y atención al cliente, cumpliendo la normativa vigente. No se ceden a terceros salvo obligación legal o necesidades logísticas.</p>
+
+        <h3>8. Ley Aplicable</h3>
+        <p>Estos términos se rigen por la legislación española. Cualquier conflicto se resolverá en los juzgados competentes del domicilio del consumidor.</p>
+      </div>
     </section>
 
     <section id="politica-privacidad" class="pagina">
-      <h2>Política de privacidad</h2>
-      <p>Aquí va el texto sobre la política de privacidad y protección de datos.</p>
-    </section>
+  <h2>Política de Privacidad</h2>
+  <div class="content">
+    <h3>1. Responsable del tratamiento</h3>
+    <p>El responsable del tratamiento de los datos personales recogidos en esta web es el titular de MiuArt, contactable a través de <a href="mailto:contacto@miuart.com">contacto@miuart.com</a>.</p>
+
+    <h3>2. Datos que recopilamos</h3>
+    <p>Recopilamos datos personales únicamente en los siguientes casos:</p>
+    <ul>
+      <li><strong>Pedidos:</strong> nombre, apellidos, dirección de envío, teléfono y email, necesarios para procesar y gestionar tu compra.</li>
+      <li><strong>Formulario de contacto:</strong> nombre y email, para poder responderte.</li>
+      <li><strong>Newsletter:</strong> email y nombre, únicamente si has dado tu consentimiento explícito marcando la casilla correspondiente al realizar tu pedido.</li>
+    </ul>
+
+    <h3>3. Finalidad del tratamiento</h3>
+    <p>Utilizamos tus datos para:</p>
+    <ul>
+      <li>Procesar, gestionar y enviar tus pedidos.</li>
+      <li>Comunicarnos contigo en relación a tu pedido o consulta.</li>
+      <li>Enviarte newsletters mensuales con novedades, si has dado tu consentimiento.</li>
+    </ul>
+
+    <h3>4. Proveedores y terceros</h3>
+    <p>Para el funcionamiento de la web utilizamos los siguientes servicios de terceros que pueden tratar datos:</p>
+    <ul>
+      <li><strong>Firebase (Google):</strong> plataforma donde se almacenan los datos de pedidos y configuración de la web.</li>
+      <li><strong>PayPal:</strong> plataforma de pago seguro. Los datos de pago son procesados directamente por PayPal y no son almacenados por MiuArt.</li>
+      <li><strong>Brevo:</strong> plataforma de email marketing utilizada para el envío de newsletters a los suscriptores.</li>
+    </ul>
+
+    <h3>5. Cookies</h3>
+    <p>Esta web utiliza cookies propias y de terceros. Puedes consultar y gestionar tus preferencias en cualquier momento haciendo clic en el enlace "Gestionar cookies" del pie de página.</p>
+    <ul>
+      <li><strong>Cookies necesarias:</strong> imprescindibles para el funcionamiento de la web, como el carrito de compra.</li>
+      <li><strong>Cookies analíticas:</strong> nos permiten conocer qué secciones de la web son más visitadas, de forma anónima.</li>
+      <li><strong>Cookies de terceros:</strong> utilizadas por PayPal para procesar pagos de forma segura.</li>
+    </ul>
+
+    <h3>6. Conservación de los datos</h3>
+    <p>Los datos de pedidos se conservan durante el tiempo necesario para cumplir con las obligaciones legales. Los datos de newsletter se conservan hasta que retires tu consentimiento.</p>
+
+    <h3>7. Tus derechos</h3>
+    <p>Tienes derecho a acceder, rectificar, suprimir, oponerte y limitar el tratamiento de tus datos personales, así como a retirar tu consentimiento para recibir newsletters en cualquier momento. Para ejercer estos derechos, contacta con nosotros en <a href="mailto:contacto@miuart.com">contacto@miuart.com</a>.</p>
+
+    <h3>8. Cambios en la política de privacidad</h3>
+    <p>Nos reservamos el derecho a actualizar esta política de privacidad. Te recomendamos revisarla periódicamente. La versión actualizada estará siempre disponible en esta página.</p>
+  </div>
+</section>
   </main>
 
   <footer>
-    <p>© 2025 Miuart. Todos los derechos reservados.</p>
+    <p>© 2026 Miuart. Todos los derechos reservados.</p>
   </footer>
 
   <nav class="footer-nav">
@@ -297,6 +483,13 @@
       <li><a href="#envio-devoluciones">Envío y devoluciones</a></li>
       <li><a href="#terminos-condiciones">Términos y condiciones</a></li>
       <li><a href="#politica-privacidad">Política de privacidad</a></li>
+      <li><a href="#" id="gestionar-cookies-link">Gestionar cookies</a></li>
+      <li>
+        <a href="https://instagram.com/miuartshop" target="_blank" rel="noopener noreferrer" class="instagram-link">
+          <img src="https://res.cloudinary.com/dhfywi5e8/image/upload/v1763324613/logo_instagram_balu9l.jpg" alt="Instagram" class="instagram-logo">
+          Síguenos en Instagram
+        </a>
+      </li>
     </ul>
   </nav>
 
@@ -310,7 +503,6 @@
     </div>
   </div>
 
-  <!-- Nou Pop-up de Cupó de Descompte -->
   <div id="descuento-popup" class="descuento-popup hidden">
     <div class="descuento-popup-content">
       <button id="descuento-popup-close" class="descuento-popup-close">&times;</button>
@@ -322,9 +514,56 @@
       </div>
     </div>
   </div>
-  
-  <script src="https://www.paypal.com/sdk/js?client-id=Aawx78olQawBAr_rd0o52vo0Dain8KzRTYfNXT-tmYDEGjUaP9Ec-TCh6at5noAfFuXte7r-EG9_f0aR&currency=EUR"></script> 
+
+  <script id="paypal-sdk"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script type="module" src="app.js"></script>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <div id="cookie-banner-text">
+    <span>🍪</span>
+    <p>Usamos cookies propias y de terceros para mejorar tu experiencia de compra y analizar el tráfico de la web. Puedes aceptar todas las cookies o configurarlas según tus preferencias. <a href="#politica-privacidad" id="cookie-privacidad-link">Más información</a></p>
+  </div>
+  <div id="cookie-banner-buttons">
+    <button id="cookie-rechazar">Rechazar</button>
+    <button id="cookie-configurar">Configurar</button>
+    <button id="cookie-aceptar">Aceptar todas</button>
+  </div>
+</div>
+
+<!-- COOKIE CONFIGURAR PANEL -->
+<div id="cookie-panel" style="display:none;">
+  <div id="cookie-panel-inner">
+    <h3>Configuración de cookies</h3>
+    <div class="cookie-option">
+      <div>
+        <strong>Cookies necesarias</strong>
+        <p>Imprescindibles para el funcionamiento de la web (carrito, login).</p>
+      </div>
+      <input type="checkbox" checked disabled>
+    </div>
+    <div class="cookie-option">
+      <div>
+        <strong>Cookies analíticas</strong>
+        <p>Nos permiten saber qué secciones visitan los usuarios.</p>
+      </div>
+      <input type="checkbox" id="cookie-check-analitica">
+    </div>
+    <div class="cookie-option">
+      <div>
+        <strong>Cookies de terceros</strong>
+        <p>Utilizadas por PayPal para procesar pagos de forma segura.</p>
+      </div>
+      <input type="checkbox" id="cookie-check-terceros">
+    </div>
+    <div id="cookie-panel-buttons">
+      <button id="cookie-panel-cancelar">Cancelar</button>
+      <button id="cookie-panel-guardar">Guardar preferencias</button>
+    </div>
+  </div>
+</div>
+<div id="cookie-overlay" style="display:none;"></div>
+
 </body>
 </html>

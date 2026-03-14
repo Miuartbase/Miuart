@@ -30,7 +30,7 @@ body {
 
 /* Slider promocional */
 .slider-promocional {
-  background: #f1cede; /* MILLORA: Canviat a color #f1cede */
+  background: #f1cede;
   height: 35px;
   overflow: hidden;
   position: relative;
@@ -206,17 +206,17 @@ nav ul.nav-menu li a:hover { background: rgba(0,0,0,0.03); color: var(--accent-2
   line-height: 1;
 }
 
-/* Video a la pàgina d'inici */
+/* MODIFICADO: Video a la pàgina d'inici - ahora aspect ratio 1:1 */
 #video-container-wrapper {
   width: 100%;
-  height: calc(100vh - 103px); /* Ajusta l'altura (100vh menys altura de header i slider) */
+  aspect-ratio: 1 / 1; /* Nuevo: aspecto cuadrado */
   overflow: hidden;
-  display: none; /* Es mostra amb JS */
+  display: none;
 }
 #hero-video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Cobreix tot l'espai sense distorsionar */
+  object-fit: cover;
 }
 
 /* NOU: Breadcrumb Navigation */
@@ -263,7 +263,7 @@ nav ul.nav-menu li a:hover { background: rgba(0,0,0,0.03); color: var(--accent-2
   pointer-events: none;
 }
 
-/* NOU: Estils per a les imatges de la home */
+/* MODIFICADO: Estils per a les imatges de la home - ahora aspect ratio 1:1 */
 .home-images-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -277,7 +277,8 @@ nav ul.nav-menu li a:hover { background: rgba(0,0,0,0.03); color: var(--accent-2
 
 .home-image-section {
   position: relative;
-  height: 400px; /* MILLORA: Altura de 400px en pantalles grans */
+  aspect-ratio: 1 / 1; /* Nuevo: aspecto cuadrado */
+  height: auto; /* Cambio: de altura fija a auto */
 }
 
 .home-image-wrapper {
@@ -286,7 +287,7 @@ nav ul.nav-menu li a:hover { background: rgba(0,0,0,0.03); color: var(--accent-2
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: transform 0.3s ease;
-  height: 100%; /* Assegura que ocupi tota l'altura del contenidor */
+  height: 100%;
 }
 
 .home-image-wrapper:hover {
@@ -295,7 +296,7 @@ nav ul.nav-menu li a:hover { background: rgba(0,0,0,0.03); color: var(--accent-2
 
 .home-images-container img {
   width: 100%;
-  height: 100%; /* Canviat per ocupar tota l'altura del contenidor */
+  height: 100%;
   object-fit: cover;
   display: block;
 }
@@ -313,7 +314,7 @@ nav ul.nav-menu li a:hover { background: rgba(0,0,0,0.03); color: var(--accent-2
 }
 
 .home-image-btn {
-  background: #e9acc8; /* MILLORA: Canviat a color #e9acc8 */
+  background: #e9acc8;
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -324,8 +325,100 @@ nav ul.nav-menu li a:hover { background: rgba(0,0,0,0.03); color: var(--accent-2
 }
 
 .home-image-btn:hover {
-  background: #d89ab6; /* Color una mica més fosc per hover */
+  background: #d89ab6;
   transform: translateY(-2px);
+}
+
+/* NUEVO: Estilos para la sección Promociones */
+.promociones-container {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  margin-top: 1rem;
+}
+
+.promociones-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.promocion-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+.promocion-item:hover {
+  transform: translateY(-5px);
+}
+
+.promocion-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Responsive para promociones */
+@media (max-width: 768px) {
+  .promociones-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .promociones-container {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .promociones-container {
+    padding: 0.75rem;
+    margin: 0.25rem;
+  }
+  
+  .promociones-grid {
+    gap: 0.75rem;
+  }
+}
+
+/* Estils per al contingut de les pàgines legals */
+.pagina .content {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+  padding: 0 1rem;
+}
+
+.pagina .content h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.2rem;
+}
+
+.pagina .content p {
+  margin-bottom: 1rem;
+}
+
+.pagina .content ul, .pagina .content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.pagina .content li {
+  margin-bottom: 0.5rem;
+}
+
+.pagina .content strong {
+  color: var(--accent);
 }
 
 /* Main container */
@@ -360,6 +453,7 @@ main { max-width: var(--container); margin: 1.5rem auto; padding: 0 1rem; }
 }
 .cabecera-tienda-slider img.active { left: 0; }
 .cabecera-tienda-slider img.prev { left: -100%; }
+.cabecera-tienda-slider img.next { left: 100%; }
 
 /* Grid productos */
 .product-grid {
@@ -522,6 +616,86 @@ main { max-width: var(--container); margin: 1.5rem auto; padding: 0 1rem; }
   box-shadow: var(--shadow-sm);
 }
 
+/* NOVA: Estils per a la secció "Nuestra Especialidad" - CORREGIDO */
+.nuestra-especialidad-container {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  margin-top: 1rem;
+}
+
+.nuestra-especialidad-content {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nuestra-especialidad-texto {
+  flex: 1;
+}
+
+.nuestra-especialidad-texto h3 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.nuestra-especialidad-texto p {
+  line-height: 1.6;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.nuestra-especialidad-imagenes {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  width: 100%;
+  min-height: 300px; /* Mínimo para que se vea en móviles */
+}
+
+.nuestra-especialidad-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.nuestra-especialidad-slider img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  /* Asegurar que las imágenes se carguen incluso si hay error */
+  background-color: #f8f8f8;
+}
+
+.nuestra-especialidad-slider img.active {
+  opacity: 1;
+}
+
+/* Estilo de fallback para cuando no hay imágenes */
+.nuestra-especialidad-imagenes:empty::before {
+  content: "No hay imágenes configuradas";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--muted);
+  font-style: italic;
+}
+
 /* Detalle */
 #detalle-contenido { display: flex; gap: 1.25rem; flex-wrap: wrap; }
 .product-gallery { display: flex; gap: 1rem; background: var(--card); padding: 1rem; border-radius: 12px; box-shadow: var(--shadow-sm); width: 100%; }
@@ -567,11 +741,11 @@ main { max-width: var(--container); margin: 1.5rem auto; padding: 0 1rem; }
   transition: all 0.2s ease; 
 }
 .btn.primary { 
-  background: #e9acc8; /* MILLORA: Canviat a color #e9acc8 */
+  background: #e9acc8;
   color: #fff; 
 }
 .btn.primary:hover { 
-  background: #d89ab6; /* Color una mica més fosc per hover */
+  background: #d89ab6;
 }
 .btn.secondary { 
   background: #fff; 
@@ -995,12 +1169,29 @@ footer {
   text-decoration: none;
   color: var(--muted);
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
 }
 .footer-nav a:hover {
-  color: var(--accent);
+  color: var(--accent-2);
 }
 
-/* Responsive */
+/* NOU: Estils per al logo d'Instagram */
+.instagram-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  filter: brightness(0.8);
+  transition: filter 0.2s ease;
+}
+
+.footer-nav a:hover .instagram-logo {
+  filter: brightness(1);
+}
+
+/* MODIFICADO: Responsive - Ajustes para mantener aspect ratio 1:1 en móviles */
 @media (max-width: 1024px) {
   #main-img { height: auto; }
   .cabecera-tienda-slider { height: 200px; }
@@ -1015,12 +1206,24 @@ footer {
   .quienes-somos-imagen {
     margin-bottom: 1.5rem;
   }
+  
+  /* NOVA: Responsive per a "Nuestra Especialidad" - CORREGIDO */
+  .nuestra-especialidad-content {
+    flex-direction: column-reverse;
+  }
+  
+  .nuestra-especialidad-imagenes {
+    margin-bottom: 1.5rem;
+    height: 350px;
+    width: 100%;
+    min-height: 300px;
+  }
 }
 
 @media (max-width: 768px) {
   #menu-toggle { display: block; }
-  .header-left .search-bar { display: none; } /* Ocultem el cercador per donar espai */
-  .header-center { flex-grow: 2; } /* Donem més espai al logo */
+  .header-left .search-bar { display: none; }
+  .header-center { flex-grow: 2; }
   nav ul.nav-menu { 
     display: none; 
     position: absolute; 
@@ -1040,7 +1243,7 @@ footer {
   .producte-botons .btn { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
   .cabecera-tienda-slider { height: 160px; }
   
-  /* MILLORA: Responsive per a les imatges de la home - ocupen tot l'ample de la pantalla */
+  /* MODIFICADO: Responsive per a les imatges de la home - mantener aspect ratio 1:1 */
   .home-images-container {
     grid-template-columns: 1fr;
     padding: 0;
@@ -1053,21 +1256,28 @@ footer {
   }
   
   .home-images-container img {
-    height: 100%; /* Manté l'altura del contenidor */
+    height: 100%;
     border-radius: 0;
   }
   
   .home-image-section {
-    height: 330px; /* MILLORA: Altura de 330px en pantalles petites */
+    aspect-ratio: 1 / 1; /* Mantener aspecto cuadrado */
+    height: auto;
   }
   
   .home-image-wrapper {
     border-radius: 0;
-    height: 100%; /* Assegura que ocupi tota l'altura del contenidor */
+    height: 100%;
   }
   
   .home-image-overlay {
     padding: 1rem;
+  }
+  
+  /* MODIFICADO: Video en móviles - mantener aspect ratio 1:1 */
+  #video-container-wrapper {
+    aspect-ratio: 1 / 1;
+    height: auto;
   }
   
   .cart-popup { padding: 1rem; }
@@ -1080,7 +1290,6 @@ footer {
   .carrito-actions { flex-direction: column; }
   .form { padding: 0.8rem; }
   .thumbnails { justify-content: center; }
-  #video-container-wrapper { height: 50vh; }
   
   /* NOU: Responsive per a "Quiénes somos" */
   .quienes-somos-container {
@@ -1093,6 +1302,26 @@ footer {
   
   .quienes-somos-texto h3 {
     font-size: 1.25rem;
+  }
+  
+  /* NOVA: Responsive per a "Nuestra Especialidad" - CORREGIDO */
+  .nuestra-especialidad-container {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+  
+  .nuestra-especialidad-content {
+    gap: 1rem;
+  }
+  
+  .nuestra-especialidad-texto h3 {
+    font-size: 1.25rem;
+  }
+  
+  .nuestra-especialidad-imagenes {
+    height: 280px;
+    width: 100%;
+    min-height: 250px;
   }
   
   /* NOU: Responsive per al breadcrumb */
@@ -1139,9 +1368,8 @@ footer {
   .carrito-item-controls { width: 100%; }
   .cart-line { flex-direction: column; align-items: flex-start; }
   .cart-line .price-info { align-self: flex-end; }
-  #video-container-wrapper { height: 40vh; }
   
-  /* MILLORA: Responsive per a les imatges de la home - ocupen tot l'ample de la pantalla */
+  /* MODIFICADO: Responsive per a les imatges de la home - mantener aspect ratio 1:1 */
   .home-images-container {
     width: 100vw;
     max-width: 100vw;
@@ -1150,11 +1378,30 @@ footer {
   }
   
   .home-images-container img {
-    height: 100%; /* Manté l'altura del contenidor */
+    height: 100%;
   }
   
   .home-image-section {
-    height: 330px; /* MILLORA: Altura de 330px en pantalles petites */
+    aspect-ratio: 1 / 1; /* Mantener aspecto cuadrado */
+    height: auto;
+  }
+  
+  /* MODIFICADO: Video en móviles pequeños - mantener aspect ratio 1:1 */
+  #video-container-wrapper {
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
+  
+  /* NOVA: Responsive per a "Nuestra Especialidad" - CORREGIDO */
+  .nuestra-especialidad-imagenes {
+    height: 220px;
+    width: 100%;
+    min-height: 200px;
+  }
+  
+  .nuestra-especialidad-container {
+    padding: 0.75rem;
+    margin: 0.25rem;
   }
   
   /* NOU: Responsive per al breadcrumb */
@@ -1186,3 +1433,254 @@ footer {
 .error { color: #c0392b; margin: 0; }
 .muted { color: var(--muted); }
 .hidden { display: none !important; }
+
+/* Fix: mantenir aspect ratio 1:1 i layout correcte */
+.nuestra-especialidad-imagenes {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius);
+  min-height: 300px;
+}
+
+.nuestra-especialidad-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.nuestra-especialidad-slider img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Mòbil fins a 1024px: imatge a sobre */
+@media (max-width: 1024px) {
+  .nuestra-especialidad-content {
+    flex-direction: column;
+  }
+  .nuestra-especialidad-imagenes {
+    order: -1;
+  }
+}
+
+/* Desktop 1024px+: text esquerra, imatge dreta */
+@media (min-width: 1024px) {
+  .nuestra-especialidad-content {
+    flex-direction: row;
+  }
+}
+
+/* ---------------------------
+   COOKIE BANNER
+   --------------------------- */
+#cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 2px solid #e0c8d8;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 9999;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+#cookie-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+#cookie-banner-text span {
+  font-size: 2rem;
+}
+
+#cookie-banner-text p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+#cookie-banner-text a {
+  color: #c0618a;
+  text-decoration: underline;
+}
+
+#cookie-banner-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+#cookie-rechazar {
+  background: white;
+  border: 1px solid #ccc;
+  color: #555;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#cookie-rechazar:hover {
+  border-color: #c0618a;
+  color: #c0618a;
+}
+
+#cookie-configurar {
+  background: white;
+  border: 1px solid #c0618a;
+  color: #c0618a;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#cookie-configurar:hover {
+  background: #f8f0f5;
+}
+
+#cookie-aceptar {
+  background: #c0618a;
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#cookie-aceptar:hover {
+  background: #a84f75;
+}
+
+/* Panel de configuració */
+#cookie-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 10000;
+}
+
+#cookie-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 480px;
+  z-index: 10001;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+#cookie-panel h3 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.cookie-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0e0ea;
+}
+
+.cookie-option:last-of-type {
+  border-bottom: none;
+}
+
+.cookie-option strong {
+  display: block;
+  color: #333;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.cookie-option p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.cookie-option input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #c0618a;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+#cookie-panel-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+#cookie-panel-cancelar {
+  background: white;
+  border: 1px solid #ccc;
+  color: #555;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#cookie-panel-cancelar:hover {
+  border-color: #c0618a;
+  color: #c0618a;
+}
+
+#cookie-panel-guardar {
+  background: #c0618a;
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#cookie-panel-guardar:hover {
+  background: #a84f75;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  #cookie-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  #cookie-banner-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
