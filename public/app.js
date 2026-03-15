@@ -2757,10 +2757,9 @@ function showAddressForm() {
   async function procesarPedidoExitoso(formData) {
     try {
       const comandaId = await guardarComanda(formData);
-
-      if (cuponAplicado) {
-        await marcarCuponUtilizadoHibrido(cuponAplicado.codigo, comandaId);
-      }
+if (cuponAplicado) {
+  await marcarCuponUtilizadoHibrido(cuponAplicado.codigo, comandaId);
+}
 
       alert("¡Pedido completado! Número: " + comandaId);
 
