@@ -17,7 +17,7 @@ import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import {
-  getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, orderBy, limit, setDoc
+  getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, orderBy, limit, setDoc, where
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 /* ---------------------------
@@ -87,6 +87,7 @@ const stockLink = document.getElementById("stock-link");
 const pedidosLink = document.getElementById("pedidos-link");
 const pedidosEnviadosLink = document.getElementById("pedidos-enviados-link");
 const integracionesLink = document.getElementById("integraciones-link");
+const cuponesLink = document.getElementById("cupones-link");
 
 const cartCountEl = document.getElementById("cart-count");
 const carritoContenido = document.getElementById("carrito-contenido");
@@ -569,13 +570,15 @@ function showPage(id) {
     loadPedidosEnviados();
   } else if (id === "integraciones") {
     loadIntegraciones();
+  } else if (id === "cupones") {
+    loadCupones();
   }
 
   // NOU: Amagar el pop-up de cerca quan canviem de pàgina
   hideSearchResults();
 
   // Registrar visita (no registrem pàgines d'admin)
-  const paginasAdmin = ["agregar-producto", "editar-producto", "imagenes-cabecera", "configuracion", "estadisticas", "stock", "pedidos", "pedidos-enviados", "integraciones", "login-section"];
+  const paginasAdmin = ["agregar-producto", "editar-producto", "imagenes-cabecera", "configuracion", "estadisticas", "stock", "pedidos", "pedidos-enviados", "cupones", "integraciones", "login-section"];
   if (!paginasAdmin.includes(id)) {
     registrarVisita(id);
   }
@@ -727,6 +730,7 @@ onAuthStateChanged(auth, (user) => {
     pedidosLink.style.display = "inline-block";
     pedidosEnviadosLink.style.display = "inline-block";
     integracionesLink.style.display = "inline-block";
+    cuponesLink.style.display = "inline-block";
   } else {
     usuarioInfo.textContent = "";
     authLink.textContent = "Login";
@@ -740,6 +744,7 @@ onAuthStateChanged(auth, (user) => {
     pedidosLink.style.display = "none";
     pedidosEnviadosLink.style.display = "none";
     integracionesLink.style.display = "none";
+    cuponesLink.style.display = "none";
   }
   loadProducts();
   loadConfig();
@@ -1787,18 +1792,16 @@ function generarCodigoDescuento() {
 }
 
 // Funciones Firebase (preparadas para futuro)
-async function guardarCuponFirestore(cupon, emailCliente = null) {
+async function guardarCuponFirestore(cupon, emailCliente = null, comandaId = null) {
   try {
-    // TODO: Cuando quieras implementar Firebase, descomenta esto:
-    /*
     await addDoc(collection(db, "cupones"), {
       ...cupon,
       email: emailCliente,
+      comandaId: comandaId,
       fechaCreacion: new Date().toISOString(),
       fechaCaducidad: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
     });
-    */
-    console.log('Cupón preparado para Firestore:', cupon.codigo);
+    console.log('Cupón guardat a Firestore:', cupon.codigo);
     return true;
   } catch (error) {
     console.error('Error guardando cupón en Firestore:', error);
@@ -1806,33 +1809,24 @@ async function guardarCuponFirestore(cupon, emailCliente = null) {
   }
 }
 
-async function buscarCuponFirestore(codigo, emailCliente = null) {
+async function buscarCuponFirestore(codigo) {
   try {
-    // TODO: Cuando quieras implementar Firebase, descomenta esto:
-    /*
     const q = query(
-      collection(db, "cupones"), 
+      collection(db, "cupones"),
       where("codigo", "==", codigo),
       where("usado", "==", false)
     );
     const querySnapshot = await getDocs(q);
-    
     if (!querySnapshot.empty) {
-      const doc = querySnapshot.docs[0];
-      const cupon = doc.data();
-      // Si tiene email, verificar que coincida
-      if (!cupon.email || cupon.email === emailCliente) {
-        return cupon;
-      }
+      return querySnapshot.docs[0].data();
     }
-    */
     return null;
   } catch (error) {
     console.error('Error buscando cupón en Firestore:', error);
     return null;
   }
 }
-
+  
 // Función mejorada para generar cupones
 async function generarCuponHibrido(descuento) {
   const codigo = generarCodigoDescuento();
@@ -1846,11 +1840,6 @@ async function generarCuponHibrido(descuento) {
   
   // ✅ GUARDAR EN AMBOS SISTEMAS (localStorage inmediato, Firestore async)
   guardarCuponLocalStorage(cupon);
-  
-  // Firestore en segundo plano (no bloqueante)
-  guardarCuponFirestore(cupon).catch(error => 
-    console.error('Error background Firestore:', error)
-  );
   
   return cupon;
 }
@@ -1979,31 +1968,28 @@ function buscarCuponLocalStorage(codigo) {
 }
 
 // Función mejorada para marcar cupones como usados
-async function marcarCuponUtilizadoHibrido(codigo) {
+async function marcarCuponUtilizadoHibrido(codigo, comandaId = null) {
   // Marcar en localStorage
   const cupones = JSON.parse(localStorage.getItem('miuart_cupones') || '[]');
   const cuponIndex = cupones.findIndex(c => c.codigo === codigo);
-  
   if (cuponIndex !== -1) {
     cupones[cuponIndex].usado = true;
     cupones[cuponIndex].fechaUso = new Date().toISOString();
     localStorage.setItem('miuart_cupones', JSON.stringify(cupones));
   }
-  
-  // Marcar en Firestore (en segundo plano)
+
+  // Marcar en Firestore
   try {
-    // TODO: Cuando implementes Firebase, descomenta esto:
-    /*
     const q = query(collection(db, "cupones"), where("codigo", "==", codigo));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
       const docRef = doc(db, "cupones", querySnapshot.docs[0].id);
       await updateDoc(docRef, {
         usado: true,
-        fechaUso: new Date().toISOString()
+        fechaUso: new Date().toISOString(),
+        comandaCanjeado: comandaId
       });
     }
-    */
   } catch (error) {
     console.error('Error marcando cupón en Firestore:', error);
   }
@@ -2452,17 +2438,22 @@ async function guardarComanda(datosFormulario) {
     };
 
     // === GENERAR CUPÓ (NUEVA VERSIÓN HÍBRIDA) ===
-const subtotal = calcularSubtotal();
-if (subtotal >= config.promocionCompraSuperiorA && config.porcentajeDescuento > 0) {
-  const cupon = await generarCuponHibrido(config.porcentajeDescuento);
-  comandaData.cuponGenerado = {
-    codigo: cupon.codigo,
-    descuento: cupon.descuento,
-    fechaCaducidad: cupon.fechaCaducidad
-  };
-  mostrarPopupDescuento(subtotal, cupon);
-  console.log('Cupón generado en compra:', cupon.codigo);
-}
+    const subtotal = calcularSubtotal();
+    if (subtotal >= config.promocionCompraSuperiorA && config.porcentajeDescuento > 0) {
+      const cupon = await generarCuponHibrido(config.porcentajeDescuento);
+      comandaData.cuponGenerado = {
+        codigo: cupon.codigo,
+        descuento: cupon.descuento,
+        fechaCaducidad: cupon.fechaCaducidad
+      };
+      mostrarPopupDescuento(subtotal, cupon);
+      console.log('Cupón generado en compra:', cupon.codigo);
+      // Guardar cupó a Firestore amb comandaId (després de tenir l'ID)
+      window.guardarCuponFirestoreAmbComanda = async (cId) => {
+        await guardarCuponFirestore(cupon, comandaData.cliente.email, cId);
+      };
+    }
+
 
     // 2. Firestore (aquest apartat està correcte)
     let comandaId = 'COM' + Date.now();
@@ -2470,6 +2461,11 @@ if (subtotal >= config.promocionCompraSuperiorA && config.porcentajeDescuento > 
       const docRef = await addDoc(collection(db, "comandas"), comandaData);
       comandaId = docRef.id;
       console.log("Comanda guardada:", comandaId);
+      // Guardar cupó amb comandaId
+      if (typeof window.guardarCuponFirestoreAmbComanda === 'function') {
+        await window.guardarCuponFirestoreAmbComanda(comandaId);
+        window.guardarCuponFirestoreAmbComanda = null;
+      }
     } catch (e) {
       console.log("Firestore falló, pero email s'enviarà");
     }
@@ -2763,7 +2759,7 @@ function showAddressForm() {
       const comandaId = await guardarComanda(formData);
 
       if (cuponAplicado) {
-        marcarCuponUtilizado(cuponAplicado.codigo);
+        await marcarCuponUtilizadoHibrido(cuponAplicado.codigo, comandaId);
       }
 
       alert("¡Pedido completado! Número: " + comandaId);
@@ -3672,6 +3668,138 @@ async function guardarIntegraciones() {
 }
 
 window.guardarIntegraciones = guardarIntegraciones;
+
+/* ---------------------------
+   CUPONES
+   --------------------------- */
+async function loadCupones() {
+  const contenedor = document.getElementById("cupones-contenido");
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "<p>Cargando cupones...</p>";
+
+  try {
+    const snap = await getDocs(query(
+      collection(db, "cupones"),
+      orderBy("fechaCreacion", "desc")
+    ));
+
+    const cupones = [];
+    snap.forEach(d => cupones.push({ _docId: d.id, ...d.data() }));
+
+    if (cupones.length === 0) {
+      contenedor.innerHTML = `
+        <div style="text-align:center; padding:3rem; color:#888;">
+          <div style="font-size:3rem;">🎟️</div>
+          <p>No hay cupones generados todavía.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const ara = new Date();
+    const total = cupones.length;
+    const usados = cupones.filter(c => c.usado).length;
+    const pendientes = cupones.filter(c => !c.usado && new Date(c.fechaCaducidad) > ara).length;
+    const caducados = cupones.filter(c => !c.usado && new Date(c.fechaCaducidad) <= ara).length;
+
+    contenedor.innerHTML = `
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:1rem; margin-bottom:2rem;">
+        <div style="background:#f8f0f5; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#c0618a;">${total}</div>
+          <div style="color:#666; margin-top:0.5rem;">Total generados</div>
+        </div>
+        <div style="background:#fff3cd; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#f0ad4e;">${pendientes}</div>
+          <div style="color:#666; margin-top:0.5rem;">Pendientes</div>
+        </div>
+        <div style="background:#d4edda; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#28a745;">${usados}</div>
+          <div style="color:#666; margin-top:0.5rem;">Usados</div>
+        </div>
+        <div style="background:#f8d7da; border-radius:12px; padding:1.5rem; text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:#dc3545;">${caducados}</div>
+          <div style="color:#666; margin-top:0.5rem;">Caducados</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+        <button onclick="filtrarCupones('todos')" id="filtre-todos" style="background:#c0618a; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Todos</button>
+        <button onclick="filtrarCupones('pendientes')" id="filtre-pendientes" style="background:#f8f0f5; color:#c0618a; border:1px solid #c0618a; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Pendientes</button>
+        <button onclick="filtrarCupones('usados')" id="filtre-usados" style="background:#f8f0f5; color:#c0618a; border:1px solid #c0618a; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Usados</button>
+        <button onclick="filtrarCupones('caducados')" id="filtre-caducados" style="background:#f8f0f5; color:#c0618a; border:1px solid #c0618a; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Caducados</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+          <thead>
+            <tr style="background:#f8f0f5;">
+              <th style="padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Código</th>
+              <th style="padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Descuento</th>
+              <th style="padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Pedido origen</th>
+              <th style="padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Pedido canjeado</th>
+              <th style="padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Fecha creación</th>
+              <th style="padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Caducidad</th>
+              <th style="padding:10px 12px; text-align:left; border-bottom:2px solid #e0c8d8;">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="cupones-taula">
+            ${cupones.map(c => renderCuponFila(c, ara)).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    window._cupones = cupones;
+    window._cuponesAra = ara;
+
+  } catch (e) {
+    contenedor.innerHTML = `<p>Error cargando cupones: ${e.message}</p>`;
+  }
+}
+
+function renderCuponFila(c, ara) {
+  const caducado = new Date(c.fechaCaducidad) <= ara;
+  const estado = c.usado ? '✅ Usado' : caducado ? '❌ Caducado' : '⏳ Pendiente';
+  const estadoColor = c.usado ? '#28a745' : caducado ? '#dc3545' : '#f0ad4e';
+  const fechaCreacion = c.fechaCreacion ? new Date(c.fechaCreacion).toLocaleDateString('es-ES') : '-';
+  const fechaCaducidad = c.fechaCaducidad ? new Date(c.fechaCaducidad).toLocaleDateString('es-ES') : '-';
+  const comandaRef = c.comandaId ? '#' + c.comandaId.slice(-8).toUpperCase() : '-';
+  const comandaCanjeado = c.comandaCanjeado ? '#' + c.comandaCanjeado.slice(-8).toUpperCase() : '-';
+
+  return `
+    <tr class="cupon-fila" data-estat="${c.usado ? 'usados' : caducado ? 'caducados' : 'pendientes'}" style="border-bottom:1px solid #f0e0ea;">
+      <td style="padding:10px 12px; font-weight:700; color:#c0618a; font-family:monospace;">${c.codigo}</td>
+      <td style="padding:10px 12px;">${c.descuento}%</td>
+      <td style="padding:10px 12px; color:#888;">${comandaRef}</td>
+      <td style="padding:10px 12px; color:#888;">${comandaCanjeado}</td>
+      <td style="padding:10px 12px;">${fechaCreacion}</td>
+      <td style="padding:10px 12px;">${fechaCaducidad}</td>
+      <td style="padding:10px 12px; font-weight:600; color:${estadoColor};">${estado}</td>
+    </tr>
+  `;
+}
+
+function filtrarCupones(filtre) {
+  ['todos', 'pendientes', 'usados', 'caducados'].forEach(f => {
+    const btn = document.getElementById(`filtre-${f}`);
+    if (btn) {
+      btn.style.background = f === filtre ? '#c0618a' : '#f8f0f5';
+      btn.style.color = f === filtre ? 'white' : '#c0618a';
+    }
+  });
+
+  const files = document.querySelectorAll('.cupon-fila');
+  files.forEach(fila => {
+    if (filtre === 'todos' || fila.dataset.estat === filtre) {
+      fila.style.display = '';
+    } else {
+      fila.style.display = 'none';
+    }
+  });
+}
+
+window.filtrarCupones = filtrarCupones;
 
 window._miuart = {
   db, auth, loadProducts, loadHeaderImages, loadHeaderImagesDetalle, carrito, saveCart, showCartPopup, showAddressForm
