@@ -8,21 +8,20 @@ if (!admin.apps.length) {
 exports.handler = async (event) => {
   try {
     const { email } = event.queryStringParameters || {};
-    if (!email) return { statusCode: 400, body: "Falta l'email" };
+    if (!email) return { statusCode: 400, body: "Falta el email" };
 
     const db = admin.firestore();
-    const snap = await db.collection("clients").where("email", "==", email).get();
 
-    if (snap.empty) return { statusCode: 404, body: "Email no trobat" };
-
-    snap.forEach(doc => doc.ref.update({ volNewsletter: false }));
+    // Actualitzar a la col·lecció newsletter
+    await db.collection("newsletter").doc(email).update({ activo: false });
 
     return {
       statusCode: 200,
-      body: "Has deixat de rebre el newsletter. Gràcies!"
+      body: "Te has dado de baja del newsletter. ¡Hasta pronto!"
     };
+
   } catch (err) {
     console.error(err);
-    return { statusCode: 500, body: "Error intern" };
+    return { statusCode: 500, body: "Error interno" };
   }
 };

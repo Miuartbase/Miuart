@@ -51,7 +51,7 @@ exports.handler = async (event) => {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { error } = await resend.emails.send({
-      from: 'MiuArt <contacto@miuart.com>',
+      from: 'Tradenfy <contacto@tradenfy.com>',
       to: [client_email],
       subject: `¡Gracias por tu compra! Pedido #${order_id}`,
       html: `
@@ -60,7 +60,7 @@ exports.handler = async (event) => {
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Confirmación de Pedido - MiUart</title>
+          <title>Confirmación de Pedido - Tradenfy</title>
           <style>
             body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:0; }
             .container { max-width:600px; margin:20px auto; background:white; border-radius:8px; overflow:hidden; box-shadow:0 0 10px rgba(0,0,0,0.1); }
@@ -115,7 +115,7 @@ exports.handler = async (event) => {
               </div>
               ${cupon_html || ''}
               <div class="footer">
-                <p>© 2026 MiUart | <a href="mailto:contacto@miuart.com">Contáctanos</a></p>
+                <p>© 2026 Tradenfy | <a href="mailto:contacto@tradenfy.com">Contáctanos</a></p>
               </div>
             </div>
           </div>

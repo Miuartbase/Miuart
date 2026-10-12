@@ -50,36 +50,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // Añadir a Brevo si el usuario acepta newsletter
-    if (volNewsletter && email) {
-      try {
-        const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
-          method: 'POST',
-          headers: {
-            'accept': 'application/json',
-            'api-key': process.env.BREVO_API_KEY,
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify({
-            email,
-            listIds: [Number(process.env.BREVO_LIST_ID)],
-            attributes: { NOMBRE: nombre }
-          })
-        });
-
-        const brevoData = await brevoResponse.json();
-        if (!brevoResponse.ok) {
-          console.error('❌ Error añadiendo cliente a Brevo:', brevoData);
-        } else {
-          console.log('✅ Cliente añadido correctamente a Brevo');
-        }
-      } catch (error) {
-        console.error('💥 Error de conexión con Brevo:', error);
-      }
-    }
-
-    // Verificar API key de Resend
-    if (!process.env.RESEND_API_KEY || !process.env.BREVO_SENDER) {
+        // Verificar API key de Resend
+    if (!process.env.RESEND_API_KEY) {
       return {
         statusCode: 500,
         headers,
@@ -90,9 +62,9 @@ exports.handler = async (event) => {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { data, error } = await resend.emails.send({
-      from: process.env.BREVO_SENDER,
-      to: ['miuartclientes@gmail.com'],
-      subject: `📧 Nuevo mensaje de ${nombre} - MiUArt`,
+      from: 'Tradenfy <contacto@tradenfy.com>',
+      to: [process.env.RESEND_EMAIL_CONTACTO],
+      subject: `📧 Nuevo mensaje de ${nombre} - Tradenfy`,
       html: `
         <h2>Nuevo mensaje de contacto</h2>
         <p><strong>Nombre:</strong> ${nombre}</p>

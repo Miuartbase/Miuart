@@ -1,0 +1,10 @@
+name = "miuart-functions"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+RESEND_EMAIL_ADMIN = "miuartclientes@gmail.com"
+RESEND_EMAIL_CONTACTO = "miuartclientes@gmail.com"
+ALLOWED_ORIGINS = "https://miuart.com,https://www.miuart.com,https://botigamiuart.web.app,https://botigamiuart.firebaseapp.com"
+FIREBASE_PROJECT_ID = "botigamiuart"
+FIREBASE_API_KEY = "AIzaSyDb58CXjRXmaZptQJQiGG-5QV8NsNS6n-4"

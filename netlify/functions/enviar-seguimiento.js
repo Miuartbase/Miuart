@@ -38,7 +38,7 @@ exports.handler = async (event) => {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { error } = await resend.emails.send({
-      from: 'MiuArt <contacto@miuart.com>',
+      from: 'Tradenfy <contacto@tradenfy.com>',
       to: [email],
       subject: `Tu pedido #${order_id} está en camino 📦`,
       html: `
@@ -56,10 +56,10 @@ exports.handler = async (event) => {
               👉 Rastrear mi pedido en Correos
             </a>
           </div>
-          <p>Si tienes alguna pregunta, contáctanos en <a href="mailto:contacto@miuart.com" style="color:#c0618a;">contacto@miuart.com</a></p>
-          <p>¡Gracias por confiar en MiuArt! 🎨</p>
+          <p>Si tienes alguna pregunta, contáctanos en <a href="mailto:contacto@tradenfy.com" style="color:#c0618a;">contacto@tradenfy.com</a></p>
+          <p>¡Gracias por confiar en Tradenfy! 🎨</p>
           <hr style="border:none; border-top:1px solid #f0e0ea; margin:20px 0;">
-          <p style="color:#aaa; font-size:0.8rem; text-align:center;">© 2026 MiuArt · <a href="mailto:contacto@miuart.com" style="color:#aaa;">contacto@miuart.com</a></p>
+          <p style="color:#aaa; font-size:0.8rem; text-align:center;">© 2026 Tradenfy · <a href="mailto:contacto@tradenfy.com" style="color:#aaa;">contacto@tradenfy.com</a></p>
         </div>
       `
     });

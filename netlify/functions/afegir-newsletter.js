@@ -1,6 +1,11 @@
-exports.handler = async (event) => {
-  console.log('🟦 Nova funció Brevo: iniciant...');
+const admin = require("firebase-admin");
 
+if (!admin.apps.length) {
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+}
+
+exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -18,34 +23,19 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'Falta email' }), headers };
     }
 
-    console.log('📨 Afegint client a Brevo:', email);
-
-    const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
-      method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'api-key': process.env.BREVO_API_KEY,
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        email,
-        listIds: [3], // 👉 el teu ID real de la llista
-        attributes: { NOMBRE: nombre || '' }
-      })
+    const db = admin.firestore();
+    await db.collection("newsletter").doc(email).set({
+      email,
+      nombre: nombre || '',
+      fecha: new Date().toISOString(),
+      activo: true
     });
 
-    const data = await brevoResponse.json();
-
-    if (!brevoResponse.ok) {
-      console.error('❌ Error Brevo:', data);
-      return { statusCode: 500, body: JSON.stringify(data), headers };
-    }
-
-    console.log('✅ Client afegit correctament a Brevo:', email);
+    console.log('✅ Subscriptor afegit a Firestore:', email);
     return { statusCode: 200, body: JSON.stringify({ success: true }), headers };
 
   } catch (error) {
-    console.error('💥 Error al servidor Brevo:', error);
+    console.error('💥 Error:', error);
     return { statusCode: 500, body: JSON.stringify({ error: error.message }), headers };
   }
 };

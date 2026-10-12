@@ -6,8 +6,30 @@
   <link rel="stylesheet" href="styles.css">
   <title>Miuart</title>
   <link rel="icon" type="image/png" href="https://res.cloudinary.com/dhfywi5e8/image/upload/v1772664153/Imagen_Logo_Favicon_h9wiil.png">
+  <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
   <link rel="apple-touch-icon" href="https://res.cloudinary.com/dhfywi5e8/image/upload/v1772664153/Imagen_Logo_Favicon_h9wiil.png">
 </head>
+
+<script>
+  try {
+    const colors = localStorage.getItem('tradenfy_colors');
+    if (colors) {
+      const c = JSON.parse(colors);
+      const root = document.documentElement;
+      Object.entries(c).forEach(([key, value]) => {
+        if (value) root.style.setProperty(key, value);
+      });
+    }
+    const bannerText = localStorage.getItem('tradenfy_cookie_banner');
+    if (bannerText) {
+      document.addEventListener('DOMContentLoaded', () => {
+        const bannerP = document.getElementById('cookie-banner-p');
+        if (bannerP) bannerP.textContent = bannerText;
+      });
+    }
+  } catch(e) {}
+</script>
+
 <body>
   <div id="slider-promocional" class="slider-promocional">
     <div class="slider-promocional-content">
@@ -16,46 +38,142 @@
   </div>
 
   <header>
-    <div class="header-left">
-      <div class="search-bar">
-        <input id="search-input" type="search" placeholder="Buscar productos...">
-        <div id="search-results-popup" class="search-results-popup">
-          <div class="search-results-content" id="search-results-content"></div>
-        </div>
+  <!-- Línia superior: admin + login -->
+  <div class="header-top">
+  <div class="header-top-inner">
+    <ul class="nav-menu nav-top" id="nav-top">
+      <li id="quienes-somos-link"><a href="#quienes-somos">Quiénes somos</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+      <li id="agregar-producto-link" style="display:none;"><a href="#agregar-producto">Agregar producto</a></li>
+      <li id="editor-inicio-link" style="display:none;"><a href="#editor-inicio">Editor secciones</a></li>
+      <li id="configuracion-link" style="display:none;"><a href="#configuracion">Configuración</a></li>
+      <li id="ressenyes-link" style="display:none;"><a href="#ressenyes-admin">Reseñas</a></li>
+      <li id="colores-link" style="display:none;"><a href="#colores">Editor de colores</a></li>
+      <li id="newsletter-link" style="display:none;"><a href="#newsletter">Newsletter</a></li>
+      <li id="emails-link" style="display:none;"><a href="#emails">Emails</a></li>
+      <li id="estadisticas-link" style="display:none;"><a href="#estadisticas">Estadísticas</a></li>
+      <li id="stock-link" style="display:none;"><a href="#stock">Control de Stock</a></li>
+      <li id="pedidos-link" style="display:none;"><a href="#pedidos">Pedidos Abiertos</a></li>
+      <li id="pedidos-enviados-link" style="display:none;"><a href="#pedidos-enviados">Pedidos Enviados</a></li>
+      <li id="cupones-link" style="display:none;"><a href="#cupones">Cupones</a></li>
+      <li id="integraciones-link" style="display:none;"><a href="#integraciones">Integraciones</a></li>
+      <li><a id="auth-link-a" href="#login-section">Login</a></li>
+    </ul>
+    <span id="usuario-info" class="usuario-info"></span>
+  <!-- Selector d'idioma -->
+    <div id="idioma-selector" style="position:relative; display:inline-block; margin-left:1rem;">
+      <button onclick="toggleIdiomaDropdown()" style="display:flex; align-items:center; gap:0.3rem; background:none; border:none; cursor:pointer; color:var(--color-nav-text); font-size:0.85rem; padding:0;">
+        <span id="idioma-actual-text">🇪🇸 ES</span>
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div id="idioma-dropdown" style="display:none; position:absolute; right:0; top:calc(100% + 6px); background:var(--card); border:1px solid rgba(0,0,0,0.08); border-radius:8px; min-width:150px; z-index:200; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
       </div>
     </div>
-    <div class="header-center">
-      <div class="logo">
-        <a href="#inicio"><img id="header-logo-img" src="https://res.cloudinary.com/demo/image/upload/v1234567890/logo.png" alt="Logo Miuart"></a>
-      </div>
+
+  </div>
+  </div>
+  <!-- Línia principal: logo + nav principal + cerca + carrito -->
+  <div class="header-main">
+    <div class="header-main-left">
+      <button id="menu-toggle" aria-label="Menú">
+  <svg id="menu-icon-open" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+  <svg id="menu-icon-close" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+</button>
+      <a href="#inicio" class="logo"><img id="header-logo-img" src="https://res.cloudinary.com/demo/image/upload/v1234567890/logo.png" alt="Logo Tradenfy"></a>
     </div>
-    <div class="header-right">
-      <button id="menu-toggle">☰</button>
-      <nav>
-        <ul class="nav-menu" id="nav-menu">
-          <li><a href="#inicio">Inicio</a></li>
-          <li><a href="#tienda">Tienda</a></li>
-          <li><a href="#quienes-somos">Quiénes somos</a></li>
-          <li><a href="#promociones">Promociones</a></li>
-          <li><a href="#contacto">Contacto</a></li>
-          <li id="agregar-producto-link" style="display:none;"><a href="#agregar-producto">Agregar producto</a></li>
-          <li id="imagenes-cabecera-link" style="display:none;"><a href="#imagenes-cabecera">Imágenes cabecera</a></li>
-          <li id="configuracion-link" style="display:none;"><a href="#configuracion">Configuración</a></li>
-          <li id="estadisticas-link" style="display:none;"><a href="#estadisticas">Estadísticas</a></li>
-          <li id="stock-link" style="display:none;"><a href="#stock">Control de Stock</a></li>
-          <li id="pedidos-link" style="display:none;"><a href="#pedidos">Pedidos Abiertos</a></li>
-          <li id="pedidos-enviados-link" style="display:none;"><a href="#pedidos-enviados">Pedidos Enviados</a></li>
-          <li id="cupones-link" style="display:none;"><a href="#cupones">Cupones</a></li>
-          <li id="integraciones-link" style="display:none;"><a href="#integraciones">Integraciones</a></li>
-          <li><a id="auth-link-a" href="#login-section">Login</a> <span id="usuario-info" class="usuario-info"></span></li>
-        </ul>
-      </nav>
-      <a href="#carrito" class="cart-link">
-        <span>🛒</span>
-        <span id="cart-count">0</span>
-      </a>
+    <nav class="header-main-nav">
+      <ul class="nav-menu nav-bottom" id="nav-menu">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#tienda">Tienda</a></li>
+        <li id="novedades-link" style="display:none;"><a href="#novedades">Novedades</a></li>
+      </ul>
+    </nav>
+    <div class="header-main-right">
+  <div class="search-bar">
+    <input id="search-input" type="search" placeholder="Buscar productos...">
+    <div id="search-results-popup" class="search-results-popup">
+      <div class="search-results-content" id="search-results-content"></div>
     </div>
-  </header>
+  </div>
+  <button class="admin-toggle-btn" id="admin-toggle-btn" aria-label="Admin" style="display:none;">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+  </button>
+  <button class="search-toggle-btn" id="search-toggle-btn" aria-label="Buscar">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  </button>
+  <a href="#carrito" class="cart-link">
+    <span>🛒</span>
+    <span id="cart-count">0</span>
+  </a>
+</div>
+
+<!-- Overlay cerca mòbil -->
+<div class="search-overlay" id="search-overlay">
+  <div class="search-overlay-inner">
+    <div class="search-overlay-bar">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; opacity:0.5;">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="search-input-mobile" type="search" placeholder="Buscar productos...">
+      <button class="search-overlay-close" id="search-overlay-close" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-overlay-results" id="search-overlay-results"></div>
+  </div>
+</div>
+
+<!-- Overlay menú mòbil -->
+<div class="menu-overlay" id="menu-overlay">
+  <div class="menu-overlay-inner">
+    <ul class="menu-overlay-list" id="menu-overlay-list">
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#tienda">Tienda</a></li>
+      <li id="novedades-link-mob" style="display:none;"><a href="#novedades">Novedades</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Overlay admin mòbil -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="menu-overlay-inner">
+    <ul class="menu-overlay-list">
+      <li id="agregar-producto-link-mob"><a href="#agregar-producto">Agregar producto</a></li>
+      <li id="editor-inicio-link-mob"><a href="#editor-inicio">Editor secciones</a></li>
+      <li id="configuracion-link-mob"><a href="#configuracion">Configuración</a></li>
+      <li id="colores-link-mob"><a href="#colores">Editor de colores</a></li>
+      <li id="newsletter-link-mob"><a href="#newsletter">Newsletter</a></li>
+      <li id="estadisticas-link-mob"><a href="#estadisticas">Estadísticas</a></li>
+      <li id="stock-link-mob"><a href="#stock">Control de Stock</a></li>
+      <li id="pedidos-link-mob"><a href="#pedidos">Pedidos Abiertos</a></li>
+      <li id="pedidos-enviados-link-mob"><a href="#pedidos-enviados">Pedidos Enviados</a></li>
+      <li id="cupones-link-mob"><a href="#cupones">Cupones</a></li>
+      <li id="ressenyes-link-mob"><a href="#ressenyes-admin">Reseñas</a></li>
+      <li id="integraciones-link-mob"><a href="#integraciones">Integraciones</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+</header>
 
   <div id="video-container-wrapper">
     <video id="hero-video" autoplay loop muted playsinline></video>
@@ -70,62 +188,10 @@
       </ol>
     </nav>
 
-    <section id="inicio" class="pagina active">
-      <div class="home-images-container">
-        <div class="home-image-section">
-          <div class="home-image-wrapper">
-            <img id="imagen-novedades" src="" alt="Novedades">
-            <div class="home-image-overlay">
-              <button class="btn primary home-image-btn" onclick="location.hash='#novedades'">Ver novedades</button>
-            </div>
-          </div>
-        </div>
-        <div class="home-image-section">
-          <div class="home-image-wrapper">
-            <img id="imagen-coleccion" src="" alt="Colección">
-            <div class="home-image-overlay">
-              <button class="btn primary home-image-btn" onclick="location.hash='#tienda'">Explora nuestra colección</button>
-            </div>
-          </div>
-        </div>
-        <div class="home-image-section">
-          <div class="home-image-wrapper">
-            <img id="imagen-especialidad" src="" alt="Especialidad">
-            <div class="home-image-overlay">
-              <button class="btn primary home-image-btn" onclick="location.hash='#nuestra-especialidad'">Nuestra especialidad</button>
-            </div>
-          </div>
-        </div>
-        <div class="home-image-section">
-          <div class="home-image-wrapper">
-            <img id="imagen-promocion" src="" alt="Promoción">
-            <div class="home-image-overlay">
-              <button class="btn primary home-image-btn" onclick="location.hash='#promociones'">Promociones</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="promociones" class="pagina">
-      <h2>Promociones</h2>
-      <div class="promociones-container">
-        <div class="promociones-grid">
-          <div class="promocion-item">
-            <img id="promocion-img-1" src="" alt="Promoción 1">
-          </div>
-          <div class="promocion-item">
-            <img id="promocion-img-2" src="" alt="Promoción 2">
-          </div>
-          <div class="promocion-item">
-            <img id="promocion-img-3" src="" alt="Promoción 3">
-          </div>
-          <div class="promocion-item">
-            <img id="promocion-img-4" src="" alt="Promoción 4">
-          </div>
-        </div>
-      </div>
-    </section>
+   <section id="inicio" class="pagina active">
+  <div class="home-images-container" id="home-images-container">
+  </div>
+</section>
 
     <section id="novedades" class="pagina">
       <div class="tienda-container">
@@ -135,13 +201,50 @@
     </section>
 
     <section id="tienda" class="pagina">
-      <div class="tienda-container">
-        <div class="cabecera-tienda-slider" id="cabecera-slider"></div>
-        <div class="product-grid" id="lista-productos"></div>
+  <div class="tienda-container">
+    <div class="cabecera-tienda-slider" id="cabecera-slider"></div>
+    <div id="filtres-bar" style="display:none; padding:0.75rem 1rem 0;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <!-- Icona filtrar -->
+    <button id="btn-filtres-toggle" onclick="toggleFiltres()" style="display:flex; align-items:center; gap:0.5rem; background:none; border:none; cursor:pointer; color:var(--text); padding:0;">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <circle cx="8" cy="6" r="2.5" fill="currentColor" stroke="none"/>
+        <line x1="4" y1="14" x2="20" y2="14"/>
+        <circle cx="16" cy="14" r="2.5" fill="currentColor" stroke="none"/>
+      </svg>
+      <span style="font-size:0.9rem;">Filtrar</span>
+    </button>
+    <!-- Icona ordenar -->
+    <div style="position:relative;">
+      <button id="btn-ordenar-toggle" onclick="toggleOrdenar()" style="display:flex; align-items:center; gap:0.5rem; background:none; border:none; cursor:pointer; color:var(--text); padding:0;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="18" x2="20" y2="18"/>
+          <line x1="4" y1="13" x2="16" y2="13"/>
+          <line x1="4" y1="8" x2="12" y2="8"/>
+          <line x1="4" y1="3" x2="8" y2="3"/>
+          <polyline points="18 3 21 6 18 9"/>
+          <line x1="21" y1="6" x2="15" y2="6"/>
+        </svg>
+        <span style="font-size:0.9rem;">Ordenar</span>
+      </button>
+      <!-- Dropdown ordenar -->
+      <div id="ordenar-dropdown" style="display:none; position:absolute; right:0; top:calc(100% + 8px); background:var(--card); border:1px solid rgba(0,0,0,0.08); border-radius:8px; min-width:200px; z-index:100; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <div class="ordenar-option" onclick="ordenarProductes('referencia')">Referencia (ID)</div>
+        <div class="ordenar-option" onclick="ordenarProductes('alfabetic')">Alfabético (nombre)</div>
+        <div class="ordenar-option" onclick="ordenarProductes('preu-asc')">Precio ascendente</div>
+        <div class="ordenar-option" onclick="ordenarProductes('preu-desc')">Precio descendente</div>
+        <div class="ordenar-option" onclick="ordenarProductes('novedades')">Novedades</div>
       </div>
-    </section>
+    </div>
+  </div>
+  <div id="categorias-filtres" style="display:none; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem;"></div>
+</div>
+    <div class="product-grid" id="lista-productos"></div>
+  </div>
+</section>
 
-    <section id="nuestra-especialidad" class="pagina">
+    <section id="nuestra-especialidad-antigua" class="pagina">
       <h2>Nuestra Especialidad</h2>
       <div class="nuestra-especialidad-container">
         <div class="nuestra-especialidad-content">
@@ -191,7 +294,7 @@
       <div class="newsletter-consent">
         <label>
           <input type="checkbox" id="newsletterCheck">
-          Quiero recibir novedades y ofertas de Miuart por correo electrónico
+          Quiero recibir novedades y ofertas de Tradenfy por correo electrónico
         </label>
      </div>
 
@@ -209,121 +312,690 @@
       </form>
     </section>
 
-    <section id="agregar-producto" class="pagina">
+    <section id="agregar-producto" class="pagina admin-section">
       <h2>Agregar producto</h2>
       <form id="formulario-producto" class="form"></form>
     </section>
 
-    <section id="editar-producto" class="pagina">
+    <section id="editar-producto" class="pagina admin-section">
       <h2>Editar producto</h2>
       <form id="formulario-editar-producto" class="form"></form>
     </section>
 
-    <section id="imagenes-cabecera" class="pagina">
-      <h2>Imágenes cabecera tienda</h2>
-      <form id="formulario-imagenes-cabecera" class="form">
-        <label for="cabecera-url">URL imagen (Cloudinary)</label>
-        <input id="cabecera-url" type="url" required>
-        <button class="btn primary">Agregar imagen</button>
-      </form>
-      <div id="cabecera-lista"></div>
-    </section>
+    <section id="editor-inicio" class="pagina admin-section">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <h2 style="margin:0;">Editor de secciones</h2>
+  <button class="btn primary" onclick="abrirModalSeccio()">+ Añadir sección</button>
+</div>
+<!-- Modal selector de plantilles -->
+<div id="modal-seccio" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+  <div style="background:var(--card); border-radius:var(--radius); padding:1.5rem; width:90%; max-width:520px;">
+    <h3 style="margin:0 0 0.25rem;">Añadir nueva sección</h3>
+    <p style="color:var(--muted); font-size:0.85rem; margin:0 0 1.25rem;">Selecciona una plantilla</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1.25rem;" id="plantilles-grid">
+      
+      <div class="plantilla-option" data-tipus="texto-imagen" onclick="seleccionarPlantilla(this)">
+        <div class="plantilla-preview-box">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px; padding:4px;">
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px;"></div>
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px; width:60%;"></div>
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px;"></div>
+          </div>
+          <div style="width:36px; height:56px; background:rgba(0,0,0,0.1); border-radius:4px; flex-shrink:0;"></div>
+        </div>
+        <p class="plantilla-option-name">Texto + imagen</p>
+        <p class="plantilla-option-desc">Título, texto e imagen al lado</p>
+      </div>
 
-    <section id="configuracion" class="pagina">
-      <h2>Configuración General</h2>
-      <form id="formulario-configuracion" class="form">
-        <label for="logo-url">URL imagen logo</label>
-        <input id="logo-url" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="video-url">URL video (Cloudinary)</label>
-        <input id="video-url" type="url" placeholder="https://res.cloudinary.com/...">
-        
-        <label for="imagen-novedades-url">URL imagen novedades (Cloudinary)</label>
-        <input id="imagen-novedades-url" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-coleccion-url">URL imagen colección (Cloudinary)</label>
-        <input id="imagen-coleccion-url" type="url" placeholder="https://res.cloudinary.com/...">
-        
-        <label for="imagen-especialidad-url">URL imagen especialidad (Cloudinary)</label>
-        <input id="imagen-especialidad-url" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-promocion-url">URL imagen promoción (Cloudinary)</label>
-        <input id="imagen-promocion-url" type="url" placeholder="https://res.cloudinary.com/...">
-        
-        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Sección "Quiénes somos"</h3>
-        <label for="imagen-quienes-somos">URL imagen quienes somos (Cloudinary)</label>
-        <input id="imagen-quienes-somos" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="titulo-quienes-somos">Título texto quienes somos</label>
-        <input id="titulo-quienes-somos" type="text" placeholder="Título para la sección">
-        <label for="texto-quienes-somos">Texto quienes somos</label>
-        <textarea id="texto-quienes-somos" rows="4" placeholder="Texto descriptivo para la sección quienes somos"></textarea>
-        
-        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Sección "Nuestra Especialidad"</h3>
-        <label for="imagen-especialidad-1">URL imagen 1 nuestra especialidad (Cloudinary)</label>
-        <input id="imagen-especialidad-1" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-especialidad-2">URL imagen 2 nuestra especialidad (Cloudinary)</label>
-        <input id="imagen-especialidad-2" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-especialidad-3">URL imagen 3 nuestra especialidad (Cloudinary)</label>
-        <input id="imagen-especialidad-3" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-especialidad-4">URL imagen 4 nuestra especialidad (Cloudinary)</label>
-        <input id="imagen-especialidad-4" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-especialidad-5">URL imagen 5 nuestra especialidad (Cloudinary)</label>
-        <input id="imagen-especialidad-5" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="titulo-nuestra-especialidad">Título texto nuestra especialidad</label>
-        <input id="titulo-nuestra-especialidad" type="text" placeholder="Título para la sección">
-        <label for="texto-nuestra-especialidad">Texto nuestra especialidad</label>
-        <textarea id="texto-nuestra-especialidad" rows="4" placeholder="Texto descriptivo para la sección nuestra especialidad"></textarea>
-        
-        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Sección "Promociones"</h3>
-        <label for="imagen-promociones-1">URL imagen 1 promociones (Cloudinary)</label>
-        <input id="imagen-promociones-1" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-promociones-2">URL imagen 2 promociones (Cloudinary)</label>
-        <input id="imagen-promociones-2" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-promociones-3">URL imagen 3 promociones (Cloudinary)</label>
-        <input id="imagen-promociones-3" type="url" placeholder="https://res.cloudinary.com/...">
-        <label for="imagen-promociones-4">URL imagen 4 promociones (Cloudinary)</label>
-        <input id="imagen-promociones-4" type="url" placeholder="https://res.cloudinary.com/...">
-        
-        <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Configuración de Descuentos</h3>
-        <label for="promocion-compra-superior">Promoción compra superior a (€)</label>
-        <input id="promocion-compra-superior" type="number" step="0.01" min="0" placeholder="Ej: 100">
-        <label for="porcentaje-descuento">% Descuento</label>
-        <input id="porcentaje-descuento" type="number" step="0.01" min="0" max="100" placeholder="Ej: 10">
-        
-        <label for="envio-valor">Coste de envío estándar (€)</label>
-        <input id="envio-valor" type="number" step="0.01" required>
-        <label for="envio-gratis-desde">Envío gratis a partir de (€)</label>
-        <input id="envio-gratis-desde" type="number" step="0.01" required>
-        <label for="slider-promociones">Slider promociones</label>
-        <input id="slider-promociones" type="text" placeholder="Texto para el slider promocional">
-        <button class="btn primary" type="submit">Guardar</button>
-        <p id="msg-config" class="muted"></p>
-      </form>
-    </section>
+      <div class="plantilla-option" data-tipus="texto-video" onclick="seleccionarPlantilla(this)">
+        <div class="plantilla-preview-box">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px; padding:4px;">
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px;"></div>
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px; width:60%;"></div>
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px;"></div>
+          </div>
+          <div style="width:36px; height:56px; background:rgba(0,0,0,0.15); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px;">▶</div>
+        </div>
+        <p class="plantilla-option-name">Texto + vídeo</p>
+        <p class="plantilla-option-desc">Título, texto y vídeo al lado</p>
+      </div>
 
-    <section id="estadisticas" class="pagina">
+      <div class="plantilla-option" data-tipus="galeria" onclick="seleccionarPlantilla(this)">
+        <div class="plantilla-preview-box">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:3px; width:100%; padding:4px;">
+            <div style="background:rgba(0,0,0,0.1); border-radius:3px; height:25px;"></div>
+            <div style="background:rgba(0,0,0,0.1); border-radius:3px; height:25px;"></div>
+            <div style="background:rgba(0,0,0,0.1); border-radius:3px; height:25px;"></div>
+            <div style="background:rgba(0,0,0,0.1); border-radius:3px; height:25px;"></div>
+          </div>
+        </div>
+        <p class="plantilla-option-name">Galería de imágenes</p>
+        <p class="plantilla-option-desc">Grid de imágenes con botones opcionales</p>
+      </div>
+
+      <div class="plantilla-option" data-tipus="solo-texto" onclick="seleccionarPlantilla(this)">
+        <div class="plantilla-preview-box">
+          <div style="width:100%; padding:6px; display:flex; flex-direction:column; gap:4px;">
+            <div style="height:10px; background:rgba(0,0,0,0.15); border-radius:3px; width:50%;"></div>
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px;"></div>
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px;"></div>
+            <div style="height:7px; background:rgba(0,0,0,0.1); border-radius:3px; width:60%;"></div>
+          </div>
+        </div>
+        <p class="plantilla-option-name">Solo texto</p>
+        <p class="plantilla-option-desc">Título y texto sin imagen</p>
+      </div>
+
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button class="btn secondary" onclick="tancarModalSeccio()">Cancelar</button>
+      <button class="btn primary" onclick="confirmarAfegirSeccio()">Añadir sección</button>
+    </div>
+  </div>
+</div>
+  
+  <!-- Vídeo de fons -->
+  <div class="form" style="max-width:700px; margin-bottom:1.5rem;">
+  <h3 id="editor-video-h3" style="font-size:1rem; margin-bottom:0.75rem;">Vídeo de fondo</h3>
+  <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+    <input type="checkbox" id="video-activo" style="width:auto;">
+    <label for="video-activo" style="margin:0; font-weight:normal; white-space:nowrap;">Mostrar vídeo en la página de inicio</label>
+  </div>
+  <div id="video-config" style="display:none;">
+    <div style="display:flex; gap:0.5rem; align-items:center;">
+      <input type="text" id="video-url-inicio" placeholder="URL del vídeo" style="flex:1;">
+      <button class="btn secondary" onclick="subirVideoInicio()">Subir vídeo</button>
+    </div>
+    <video id="video-preview-inicio" style="width:100%; max-height:200px; border-radius:8px; margin-top:0.5rem; display:none;" controls></video>
+  </div>
+</div>
+
+  <!-- Seccions opcionals -->
+<div class="form" style="max-width:700px; margin-bottom:1.5rem;">
+  <h3 id="editor-secciones-opcionales-h3" style="font-size:1rem; margin-bottom:0.75rem;">Secciones opcionales</h3>
+  <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+    <input type="checkbox" id="mostrar-quienes-somos" style="width:auto;">
+    <label for="mostrar-quienes-somos" style="margin:0; font-weight:normal; white-space:nowrap;">Mostrar sección "Quiénes somos"</label>
+  </div>
+  <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+    <input type="checkbox" id="mostrar-novedades" style="width:auto;">
+    <label for="mostrar-novedades" style="margin:0; font-weight:normal; white-space:nowrap;">Mostrar sección "Novedades"</label>
+  </div>
+  <button class="btn primary" id="guardar-config-inicio" style="margin-top:1rem;">Guardar configuración</button>
+  <p id="msg-config-inicio" style="color:green;"></p>
+</div>
+
+  <!-- Imatges -->
+  <div style="max-width:700px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <h3 id="editor-imagenes-inicio-h3" style="font-size:1rem; margin:0;">Imágenes de inicio</h3>
+      <button class="btn primary" onclick="agregarImagenInicio()">+ Agregar imagen</button>
+    </div>
+    <div id="imagenes-inicio-lista"></div>
+  </div>
+  
+  <!-- Secció Quiénes somos -->
+  <div style="max-width:700px; margin-top:2rem; padding-top:2rem; border-top:1px solid rgba(0,0,0,0.08);">
+  <h3 id="editor-qs-h3" style="font-size:1rem; margin-bottom:1rem;">Sección "Quiénes somos"</h3>
+  
+  <div class="form" style="margin-bottom:1rem;">
+    
+    <div id="qs-titols-container"></div>
+    <div id="qs-textos-container"></div>
+    
+    <label id="editor-qs-imagen-label">Imagen</label>
+    <div style="display:flex; gap:0.5rem; align-items:center;">
+      <input type="text" id="qs-imagen-url" placeholder="URL de la imagen" style="flex:1;">
+      <button class="btn secondary" onclick="subirImagenQS()">📷 Subir</button>
+    </div>
+    <img id="qs-imagen-preview" src="" style="width:100px; height:100px; object-fit:cover; border-radius:8px; margin-top:0.5rem; display:none;">
+    
+    <button class="btn primary" id="guardar-quienes-somos" style="margin-top:1rem;">Guardar</button>
+    <p id="msg-quienes-somos" style="color:green;"></p>
+  </div>
+</div>
+
+<!-- Seccions personalitzades -->
+<div style="max-width:700px; margin-top:2rem; padding-top:2rem; border-top:1px solid rgba(0,0,0,0.08);">
+  <h3 id="editor-sec-personalizadas-h3" style="font-size:1rem; margin-bottom:1rem;">Secciones personalizadas</h3>
+  <div id="seccions-personalitzades-lista"></div>
+</div>
+
+<!-- Textos legales -->
+<div style="max-width:700px; margin-top:2rem; padding-top:2rem; border-top:1px solid rgba(0,0,0,0.08);">
+  <h3 id="editor-textos-legales-h3" style="font-size:1rem; margin-bottom:1rem;">Textos legales</h3>
+  <div class="form">
+    <!-- Pestanyes -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+      <button class="btn-tab-legal active" onclick="canviarTabLegal('envio', this)">Envío y devoluciones</button>
+      <button class="btn-tab-legal" onclick="canviarTabLegal('terminos', this)">Términos y condiciones</button>
+      <button class="btn-tab-legal" onclick="canviarTabLegal('privacidad', this)">Política de privacidad</button>
+      <button class="btn-tab-legal" onclick="canviarTabLegal('cookies', this)">Gestionar cookies</button>
+    </div>
+    <!-- Editors Quill -->
+    <div id="tab-legal-envio" class="tab-legal-content">
+      <div id="quill-container-envio"></div>
+    </div>
+    <div id="tab-legal-terminos" class="tab-legal-content" style="display:none;">
+      <div id="quill-container-terminos"></div>
+    </div>
+    <div id="tab-legal-privacidad" class="tab-legal-content" style="display:none;">
+      <div id="quill-container-privacidad"></div>
+    </div>
+    <div id="tab-legal-cookies" class="tab-legal-content" style="display:none;">
+  <!-- Text del banner -->
+  <div style="margin-bottom:1rem;">
+    <label style="font-size:0.9rem; font-weight:600; display:block; margin-bottom:0.5rem;">Texto del banner</label>
+    <div id="cookie-banner-texts-container"></div>
+  </div>
+  <!-- Categories -->
+  <div style="margin-bottom:1rem;">
+    <label style="font-size:0.9rem; font-weight:600; display:block; margin-bottom:0.5rem;">Categorías de cookies</label>
+    <div id="cookie-categories-admin"></div>
+    <button class="btn secondary" onclick="afegirCategoriaCookie()" style="margin-top:0.75rem;">+ Añadir categoría</button>
+  </div>
+</div>
+    <button class="btn primary" id="btn-guardar-legal" onclick="guardarTextosLegales()" style="margin-top:1rem;">Guardar</button>
+    <span id="msg-textos-legales" style="margin-left:1rem; color:green; font-size:0.9rem;"></span>
+  </div>
+</div>
+
+<!-- Xarxes socials -->
+<div style="max-width:700px; margin-top:2rem; padding-top:2rem; border-top:1px solid rgba(0,0,0,0.08);">
+  <h3 id="editor-redes-h3" style="font-size:1rem; margin-bottom:1rem;">Redes sociales</h3>
+  <div class="form">
+
+    <div class="red-row">
+      <div class="red-icon" style="background:#fce4ec;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div>
+      <span class="red-name">Instagram</span>
+      <input type="url" id="rs-instagram-url" placeholder="https://instagram.com/tutienda" style="flex:1;">
+      <label class="toggle-rs"><input type="checkbox" id="rs-instagram-activo"><span class="slider-rs"></span></label>
+    </div>
+
+    <div class="red-row">
+      <div class="red-icon" style="background:#e3f2fd;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+      <span class="red-name">Facebook</span>
+      <input type="url" id="rs-facebook-url" placeholder="https://facebook.com/tutienda" style="flex:1;">
+      <label class="toggle-rs"><input type="checkbox" id="rs-facebook-activo"><span class="slider-rs"></span></label>
+    </div>
+
+    <div class="red-row">
+      <div class="red-icon" style="background:#f3e5f5;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#000"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></div>
+      <span class="red-name">TikTok</span>
+      <input type="url" id="rs-tiktok-url" placeholder="https://tiktok.com/@tutienda" style="flex:1;">
+      <label class="toggle-rs"><input type="checkbox" id="rs-tiktok-activo"><span class="slider-rs"></span></label>
+    </div>
+
+    <div class="red-row">
+      <div class="red-icon" style="background:#ffebee;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#FF0000"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></div>
+      <span class="red-name">YouTube</span>
+      <input type="url" id="rs-youtube-url" placeholder="https://youtube.com/@tutienda" style="flex:1;">
+      <label class="toggle-rs"><input type="checkbox" id="rs-youtube-activo"><span class="slider-rs"></span></label>
+    </div>
+
+    <div class="red-row">
+      <div class="red-icon" style="background:#f5f5f5;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+      <span class="red-name">Twitter/X</span>
+      <input type="url" id="rs-twitter-url" placeholder="https://x.com/tutienda" style="flex:1;">
+      <label class="toggle-rs"><input type="checkbox" id="rs-twitter-activo"><span class="slider-rs"></span></label>
+    </div>
+
+    <div class="red-row">
+      <div class="red-icon" style="background:#fce4ec;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#E60023"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/></svg></div>
+      <span class="red-name">Pinterest</span>
+      <input type="url" id="rs-pinterest-url" placeholder="https://pinterest.com/tutienda" style="flex:1;">
+      <label class="toggle-rs"><input type="checkbox" id="rs-pinterest-activo"><span class="slider-rs"></span></label>
+    </div>
+
+    <div class="red-row">
+      <div class="red-icon" style="background:#e3f2fd;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></div>
+      <span class="red-name">LinkedIn</span>
+      <input type="url" id="rs-linkedin-url" placeholder="https://linkedin.com/company/tutienda" style="flex:1;">
+      <label class="toggle-rs"><input type="checkbox" id="rs-linkedin-activo"><span class="slider-rs"></span></label>
+    </div>
+
+    <button class="btn primary" id="guardar-redes-sociales" style="margin-top:1rem; width:100%;">Guardar redes sociales</button>
+    <p id="msg-redes-sociales" style="color:green;"></p>
+  </div>
+</div>
+</section>
+
+    <section id="configuracion" class="pagina admin-section">
+  <h2>Configuración General</h2>
+  <form id="formulario-configuracion" class="form">
+    <label for="logo-url">URL imagen logo</label>
+<div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+  <input id="logo-url" type="url" placeholder="https://res.cloudinary.com/..." style="flex:1;">
+  <button class="btn secondary" type="button" onclick="subirImagenLogo()">📷 Subir</button>
+</div>
+
+<h3 id="cabecera-titulo-h3" style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Imágenes cabecera tienda</h3>
+<button class="btn secondary" type="button" onclick="subirIAfegirImagenCabecera()">📷 Subir imagen</button>
+<div id="cabecera-lista" style="margin-top:0.75rem;"></div>
+
+    <h3 id="descuentos-titulo-h3" style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Configuración de Descuentos</h3>
+    <label for="promocion-compra-superior">Promoción compra superior a (€)</label>
+    <input id="promocion-compra-superior" type="number" step="0.01" min="0" placeholder="Ej: 100">
+    <label for="porcentaje-descuento" data-t="config_descuento_label">% Descuento en la siguiente compra</label>
+    <input id="porcentaje-descuento" type="number" step="0.01" min="0" max="100" placeholder="Ej: 10">
+    <label for="envio-valor">Coste de envío estándar (€)</label>
+    <input id="envio-valor" type="number" step="0.01" required>
+    <label for="envio-gratis-desde">Envío gratis a partir de (€)</label>
+    <input id="envio-gratis-desde" type="number" step="0.01" required>
+    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+      <input type="checkbox" id="slider-activo" style="width:auto; margin:0;">
+      <label for="slider-activo" style="margin:0;">Activar slider promocional</label>
+    </div>
+    <div id="slider-promociones-container"></div>
+
+     <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Configuración de Reseñas</h3>
+    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+      <input type="checkbox" id="resenyes-actives" style="width:auto; margin:0;">
+      <label for="resenyes-actives" style="margin:0;">Activar reseñas de productos</label>
+    </div>
+    <label for="resenyes-mode">¿Quién puede dejar reseñas?</label>
+    <select id="resenyes-mode" style="margin-bottom:0.5rem;">
+      <option value="tothom">Cualquier visitante</option>
+      <option value="compradors">Solo clientes que han comprado</option>
+    </select>
+
+    <h3 data-t="config_idioma_defecto" style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Idioma por defecto</h3>
+    <label data-t="config_idioma_defecto_desc" for="idioma-defecto">Idioma de la tienda y del panel admin</label>
+    <input type="hidden" id="idioma-defecto" value="es">
+    <div id="idioma-defecto-selector" style="position:relative; display:inline-block; margin-bottom:0.5rem; width:100%;">
+      <button type="button" onclick="toggleIdiomaDefecteDropdown()" style="display:flex; align-items:center; gap:0.5rem; background:var(--card); border:1px solid rgba(0,0,0,0.15); border-radius:var(--radius); padding:0.5rem 0.75rem; cursor:pointer; width:100%; font-size:0.9rem;">
+        <span id="idioma-defecto-actual" style="display:flex; align-items:center; gap:0.5rem; flex:1;"></span>
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="idioma-defecto-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:var(--card); border:1px solid rgba(0,0,0,0.1); border-radius:var(--radius); box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:100; max-height:220px; overflow-y:auto;"></div>
+    </div>
+    <h3 data-t="config_idiomas_activos" style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Idiomas activos</h3>
+    <p data-t="config_idiomas_activos_desc" style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">Selecciona los idiomas que estarán disponibles en tu tienda.</p>
+    <div id="idiomas-activos-checks" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1.5rem;">
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="es" style="width:auto; margin:0;"> <img src="./flags/es.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Español
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="cat" style="width:auto; margin:0;"> <img src="./flags/cat.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Català
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="en" style="width:auto; margin:0;"> <img src="./flags/gb.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> English
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="fr" style="width:auto; margin:0;"> <img src="./flags/fr.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Français
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="de" style="width:auto; margin:0;"> <img src="./flags/de.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Deutsch
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="it" style="width:auto; margin:0;"> <img src="./flags/it.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Italiano
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="pt" style="width:auto; margin:0;"> <img src="./flags/pt.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Português
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="sv" style="width:auto; margin:0;"> <img src="./flags/se.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Svenska
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="da" style="width:auto; margin:0;"> <img src="./flags/dk.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Dansk
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="pl" style="width:auto; margin:0;"> <img src="./flags/pl.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Polski
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="fi" style="width:auto; margin:0;"> <img src="./flags/fi.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Suomi
+  </label>
+  <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.3rem 0;">
+    <input type="checkbox" name="idioma-activo" value="no" style="width:auto; margin:0;"> <img src="./flags/no.svg" style="width:20px; height:15px; object-fit:cover; border-radius:2px;"> Norsk
+  </label>
+</div>
+    <button class="btn primary" data-t="config_guardar" type="submit">Guardar</button>
+    <p id="msg-config" class="muted"></p>
+  </form>
+</section>
+
+<section id="ressenyes-admin" class="pagina admin-section">
+  <h2>Reseñas</h2>
+  <div style="max-width:800px; margin:0 auto;">
+
+    <!-- Pendents d'aprovació -->
+    <div style="margin-bottom:2rem;">
+      <h3 id="resenyes-pendents-h3" style="font-size:1rem; margin-bottom:1rem;">Pendientes de aprobación</h3>
+      <div id="ressenyes-pendents"></div>
+    </div>
+
+    <!-- Aprovades -->
+    <div>
+      <h3 id="resenyes-aprovades-h3" style="font-size:1rem; margin-bottom:1rem;">Reseñas aprobadas</h3>
+      <div id="ressenyes-aprovades"></div>
+    </div>
+
+  </div>
+</section>
+
+    <section id="colores" class="pagina admin-section">
+  <h2 data-t="admin_editor_colores">Editor de colores</h2>
+  <div style="max-width:700px;">
+    <p data-t="colores_descripcio" style="color:var(--admin-text); font-size:0.9rem; margin-bottom:1.5rem;">Personaliza los colores de tu tienda. Los cambios se aplican al instante.</p>
+ 
+    <h3 data-t="colores_h3_cabecera" style="color:var(--admin-text); margin-bottom:1rem; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:0.5rem;">🏠 Colores cabecera</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem;">
+      <div class="color-row-item" data-input="color-promo-slider">
+        <div class="color-swatch-box" style="background:#f1cede;"><input type="color" id="color-promo-slider" value="#f1cede"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_promo_slider">Color slider promocional cabecera</p><span class="color-hex-value">#f1cede</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-promo-slider-text">
+        <div class="color-swatch-box" style="background:#0b0b0b;"><input type="color" id="color-promo-slider-text" value="#0b0b0b"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_promo_slider_text">Color texto slider promocional</p><span class="color-hex-value">#0b0b0b</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-header-top-bg">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-header-top-bg" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_header_top_bg">Color fondo top head</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-header-top-text">
+        <div class="color-swatch-box" style="background:#0b0b0b;"><input type="color" id="color-header-top-text" value="#0b0b0b"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_header_top_text">Color texto top head</p><span class="color-hex-value">#0b0b0b</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-header-bg">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-header-bg" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_header_bg">Color fondo head</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-header-text">
+        <div class="color-swatch-box" style="background:#0b0b0b;"><input type="color" id="color-header-text" value="#0b0b0b"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_header_text">Color texto head</p><span class="color-hex-value">#0b0b0b</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cart-counter-bg">
+        <div class="color-swatch-box" style="background:#b22222;"><input type="color" id="color-cart-counter-bg" value="#b22222"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cart_counter_bg">Color contador carrito</p><span class="color-hex-value">#b22222</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cart-counter-text">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-cart-counter-text" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cart_counter_text">Color texto contador carrito</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-nav-overlay-bg">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-nav-overlay-bg" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_nav_overlay_bg">Color fondo menús navegación overlay en mobiles</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-nav-overlay-text">
+        <div class="color-swatch-box" style="background:#0b0b0b;"><input type="color" id="color-nav-overlay-text" value="#0b0b0b"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_nav_overlay_text">Color texto menús navegación overlay en mobiles</p><span class="color-hex-value">#0b0b0b</span></div>
+      </div>
+    </div>
+ 
+    <h3 data-t="colores_h3_cuerpo" style="color:var(--admin-text); margin-bottom:1rem; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:0.5rem;">📄 Colores cuerpo de página</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem;">
+      <div class="color-row-item" data-input="color-bg">
+        <div class="color-swatch-box" style="background:#f6f6f6;"><input type="color" id="color-bg" value="#f6f6f6"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_fondo">Color de fondo</p><span class="color-hex-value">#f6f6f6</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-card">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-card" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_tarjetas">Color de tarjetas</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+    </div>
+ 
+    <h3 data-t="colores_h3_textos" style="color:var(--admin-text); margin-bottom:1rem; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:0.5rem;">✍️ Colores textos</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem;">
+      <div class="color-row-item" data-input="color-text">
+        <div class="color-swatch-box" style="background:#0b0b0b;"><input type="color" id="color-text" value="#0b0b0b"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_texto_principal">Color de texto principal</p><span class="color-hex-value">#0b0b0b</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-muted">
+        <div class="color-swatch-box" style="background:#6b6b6b;"><input type="color" id="color-muted" value="#6b6b6b"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_texto_secundario">Color de texto secundario</p><span class="color-hex-value">#6b6b6b</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-accent">
+        <div class="color-swatch-box" style="background:#111111;"><input type="color" id="color-accent" value="#111111"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_accent">Color nombres de productos</p><span class="color-hex-value">#111111</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-accent-2">
+        <div class="color-swatch-box" style="background:#b22222;"><input type="color" id="color-accent-2" value="#b22222"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_accent2">Color precios tarjetas productos y total en carrito</p><span class="color-hex-value">#b22222</span></div>
+      </div>
+    </div>
+ 
+    <h3 data-t="colores_h3_botones" style="color:var(--admin-text); margin-bottom:1rem; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:0.5rem;">🔘 Colores botones</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem;">
+      <div class="color-row-item" data-input="color-primary">
+        <div class="color-swatch-box" style="background:#e9acc8;"><input type="color" id="color-primary" value="#e9acc8"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_primary">Color primario botones principales</p><span class="color-hex-value">#e9acc8</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-primary-hover">
+        <div class="color-swatch-box" style="background:#d89ab6;"><input type="color" id="color-primary-hover" value="#d89ab6"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_primary_hover">Color secundario botones principales</p><span class="color-hex-value">#d89ab6</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-primary-text">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-primary-text" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_primary_text">Color texto botones principales</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-secondary">
+        <div class="color-swatch-box" style="background:#c0618a;"><input type="color" id="color-secondary" value="#c0618a"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_secondary">Color primario botones secundarios</p><span class="color-hex-value">#c0618a</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-secondary-hover">
+        <div class="color-swatch-box" style="background:#a0507a;"><input type="color" id="color-secondary-hover" value="#a0507a"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_secondary_hover">Color secundario botones secundarios</p><span class="color-hex-value">#a0507a</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-secondary-text">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-secondary-text" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_secondary_text">Color texto botones secundarios</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+    </div>
+ 
+    <h3 data-t="colores_h3_cookies" style="color:var(--admin-text); margin-bottom:1rem; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:0.5rem;">🍪 Colores botones cookies</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem;">
+      <div class="color-row-item" data-input="color-cookie-btn">
+        <div class="color-swatch-box" style="background:#c0618a;"><input type="color" id="color-cookie-btn" value="#c0618a"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_aceptar_bg">Aceptar todas — color primario</p><span class="color-hex-value">#c0618a</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-btn-hover">
+        <div class="color-swatch-box" style="background:#a84f75;"><input type="color" id="color-cookie-btn-hover" value="#a84f75"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_aceptar_hover">Aceptar todas — color secundario</p><span class="color-hex-value">#a84f75</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-aceptar-text">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-cookie-aceptar-text" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_aceptar_text">Aceptar todas — color texto</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-configurar-bg">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-cookie-configurar-bg" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_configurar_bg">Configurar — color primario</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-configurar-hover">
+        <div class="color-swatch-box" style="background:#f8f0f5;"><input type="color" id="color-cookie-configurar-hover" value="#f8f0f5"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_configurar_hover">Configurar — color secundario</p><span class="color-hex-value">#f8f0f5</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-configurar-border">
+        <div class="color-swatch-box" style="background:#c0618a;"><input type="color" id="color-cookie-configurar-border" value="#c0618a"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_configurar_border">Configurar — color borde</p><span class="color-hex-value">#c0618a</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-configurar-text">
+        <div class="color-swatch-box" style="background:#c0618a;"><input type="color" id="color-cookie-configurar-text" value="#c0618a"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_configurar_text">Configurar — color texto</p><span class="color-hex-value">#c0618a</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-rechazar-bg">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-cookie-rechazar-bg" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_rechazar_bg">Rechazar — color primario</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-rechazar-hover">
+        <div class="color-swatch-box" style="background:#f8f8f8;"><input type="color" id="color-cookie-rechazar-hover" value="#f8f8f8"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_rechazar_hover">Rechazar — color secundario</p><span class="color-hex-value">#f8f8f8</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-rechazar-border">
+        <div class="color-swatch-box" style="background:#cccccc;"><input type="color" id="color-cookie-rechazar-border" value="#cccccc"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_rechazar_border">Rechazar — color borde</p><span class="color-hex-value">#cccccc</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-rechazar-text">
+        <div class="color-swatch-box" style="background:#555555;"><input type="color" id="color-cookie-rechazar-text" value="#555555"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_rechazar_text">Rechazar — color texto</p><span class="color-hex-value">#555555</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-guardar-bg">
+        <div class="color-swatch-box" style="background:#c0618a;"><input type="color" id="color-cookie-guardar-bg" value="#c0618a"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_guardar_bg">Guardar preferencias — color primario</p><span class="color-hex-value">#c0618a</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-guardar-hover">
+        <div class="color-swatch-box" style="background:#a84f75;"><input type="color" id="color-cookie-guardar-hover" value="#a84f75"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_guardar_hover">Guardar preferencias — color secundario</p><span class="color-hex-value">#a84f75</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-guardar-text">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-cookie-guardar-text" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_guardar_text">Guardar preferencias — color texto</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-cancelar-bg">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-cookie-cancelar-bg" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_cancelar_bg">Cancelar — color primario</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-cancelar-hover">
+        <div class="color-swatch-box" style="background:#f8f0f5;"><input type="color" id="color-cookie-cancelar-hover" value="#f8f0f5"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_cancelar_hover">Cancelar — color secundario</p><span class="color-hex-value">#f8f0f5</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-cancelar-border">
+        <div class="color-swatch-box" style="background:#cccccc;"><input type="color" id="color-cookie-cancelar-border" value="#cccccc"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_cancelar_border">Cancelar — color borde</p><span class="color-hex-value">#cccccc</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-cookie-cancelar-text">
+        <div class="color-swatch-box" style="background:#555555;"><input type="color" id="color-cookie-cancelar-text" value="#555555"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_cookie_cancelar_text">Cancelar — color texto</p><span class="color-hex-value">#555555</span></div>
+      </div>
+    </div>
+ 
+    <h3 data-t="colores_h3_footer" style="color:var(--admin-text); margin-bottom:1rem; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:0.5rem;">🦶 Colores pie de página</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem;">
+      <div class="color-row-item" data-input="color-footer-bg">
+        <div class="color-swatch-box" style="background:#ffffff;"><input type="color" id="color-footer-bg" value="#ffffff"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_footer_bg">Color fondo pie de página</p><span class="color-hex-value">#ffffff</span></div>
+      </div>
+      <div class="color-row-item" data-input="color-footer-text">
+        <div class="color-swatch-box" style="background:#0b0b0b;"><input type="color" id="color-footer-text" value="#0b0b0b"></div>
+        <div class="color-info"><p class="color-name" data-t="colores_footer_text">Color texto pie de página</p><span class="color-hex-value">#0b0b0b</span></div>
+      </div>
+    </div>
+ 
+    <button class="btn primary" id="guardar-colores" style="width:100%; margin-top:1.5rem;">Guardar colores</button>
+    <p id="msg-colores" style="color:green; margin-top:0.5rem;"></p>
+  </div>
+</section>
+
+<section id="newsletter" class="pagina admin-section">
+  <h2>Newsletter</h2>
+
+  <!-- Configuració general -->
+  <div style="background:var(--card); border:1px solid rgba(0,0,0,0.08); border-radius:10px; padding:1rem; margin-bottom:1rem; max-width:900px;">
+    <div id="nl-config-general-title" style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem; font-weight:600;">⚙️ Configuración general</div>
+     <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem;">
+        <label id="nl-color-fondo-label" style="margin:0;">Color fondo:</label>
+        <input type="color" id="nl-global-bg" value="#f4f4f4" oninput="nlUpdateGlobal('bg', this.value)" style="width:32px; height:28px; padding:2px; border:1px solid #ddd; border-radius:4px; cursor:pointer;">
+        <input type="text" id="nl-global-bg-text" value="#f4f4f4" oninput="nlUpdateGlobal('bg', this.value)" style="width:75px; padding:4px 6px; border:1px solid #ddd; border-radius:4px; font-size:0.8rem;">
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem;">
+        <label id="nl-asunto-label" style="margin:0;">Asunto:</label>
+        <input type="text" id="nl-asunto" placeholder="Asunto del email..." style="width:200px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:0.85rem;">
+      </div>
+    </div>
+  </div>
+
+  <div class="newsletter-grid" style="max-width:900px;">
+
+    <!-- Columna esquerra: editor de blocs -->
+    <div style="display:flex; flex-direction:column; gap:0;">
+
+      <!-- Botons afegir blocs -->
+      <div style="background:var(--bg); border:1px solid rgba(0,0,0,0.08); border-radius:10px; padding:0.75rem; margin-bottom:0.75rem;">
+        <div id="nl-añadir-bloque-title" style="font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">Añadir bloque">Añadir bloque</div>
+        <div style="display:flex; gap:0.3rem; flex-wrap:wrap;">
+          <button class="btn secondary nl-add-btn" data-tipus="cabecera" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('cabecera')">🏷️ Cabecera</button>
+          <button class="btn secondary nl-add-btn" data-tipus="texto" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('texto')">📝 Texto</button>
+          <button class="btn secondary nl-add-btn" data-tipus="imagen" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('imagen')">🖼️ Imagen</button>
+          <button class="btn secondary nl-add-btn" data-tipus="imagen-texto" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('imagen-texto')">📰 Img+Texto</button>
+          <button class="btn secondary nl-add-btn" data-tipus="boton" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('boton')">🔘 Botón</button>
+          <button class="btn secondary nl-add-btn" data-tipus="productos" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('productos')">🛍️ Productos</button>
+          <button class="btn secondary nl-add-btn" data-tipus="descuento" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('descuento')">🎟️ Descuento</button>
+          <button class="btn secondary nl-add-btn" data-tipus="redes" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('redes')">📱 Redes</button>
+          <button class="btn secondary nl-add-btn" data-tipus="firma" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('firma')">✍️ Firma</button>
+          <button class="btn secondary nl-add-btn" data-tipus="separador" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('separador')">➖ Separador</button>
+          <button class="btn secondary nl-add-btn" data-tipus="Pie de página" style="font-size:0.72rem; padding:0.25rem 0.5rem;" onclick="nlAddBlock('footer')">📋 Pie de página</button>
+        </div>
+      </div>
+
+      <!-- Llista de blocs -->
+      <div id="nl-blocks-list">
+        <div id="nl-empty-state" style="text-align:center; padding:2rem; color:var(--muted); border:1px dashed rgba(0,0,0,0.15); border-radius:10px;">
+          <div style="font-size:2rem;">✉️</div>
+          <p style="font-size:0.85rem; margin-top:0.5rem;">Añade bloques para crear tu newsletter</p>
+        </div>
+      </div>
+
+      <!-- Botons guardar i enviar -->
+      <div style="margin-top:1rem; display:flex; gap:0.5rem;">
+        <button class="btn primary" id="guardar-newsletter-config" style="flex:1;" onclick="nlGuardar()">💾 Guardar</button>
+        <p id="msg-newsletter-config" style="color:green; font-size:0.85rem; align-self:center;"></p>
+      </div>
+
+      <!-- Enviar -->
+      <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(0,0,0,0.08);">
+        <h3 id="newsletter-enviar-h3" style="font-size:1rem; margin-bottom:0.5rem;">Enviar newsletter</h3>
+        <p id="nl-enviar-desc" style="color:var(--muted); font-size:0.85rem; margin-bottom:0.75rem;">Se enviará a todos los suscriptores activos.</p>
+        <button class="btn primary" id="enviar-newsletter-btn" style="width:100%; background:#c0618a;">Enviar newsletter ahora</button>
+        <p id="msg-newsletter-envio" style="margin-top:0.5rem;"></p>
+      </div>
+
+      <!-- Subscriptors -->
+      <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(0,0,0,0.08);">
+        <h3 id="newsletter-suscriptores-h3" style="font-size:1rem; margin-bottom:0.5rem;">Suscriptores activos</h3>
+        <p id="newsletter-count" style="color:var(--muted); font-size:0.9rem; margin-bottom:1rem;">Cargando...</p>
+        <div id="newsletter-suscriptores" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;"></div>
+      </div>
+
+      <!-- Historial enviaments -->
+      <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(0,0,0,0.08);">
+        <h3 style="font-size:1rem; margin-bottom:0.5rem;">📋 Historial de envíos</h3>
+        <p id="newsletter-historial-count" style="color:var(--muted); font-size:0.9rem; margin-bottom:1rem;">Cargando...</p>
+        <div id="newsletter-historial" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- Columna dreta: previsualització -->
+    <div>
+      <h3 id="newsletter-preview-h3" style="font-size:1rem; margin-bottom:1rem;">Previsualización</h3>
+      <div id="newsletter-preview" style="background:#f4f4f4; border-radius:var(--radius); padding:1rem; overflow:auto; max-height:800px;">
+        <div id="newsletter-preview-content"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+    <section id="emails" class="pagina admin-section">
+     <h2>Emails</h2>
+     <div id="emails-contenido"></div>
+   </section>
+
+    <section id="estadisticas" class="pagina admin-section">
       <h2>Estadísticas</h2>
       <div id="estadisticas-contenido"></div>
     </section>
 
-    <section id="stock" class="pagina">
+    <section id="stock" class="pagina admin-section">
       <h2>Control de Stock</h2>
       <div id="stock-contenido"></div>
     </section>
 
-   <section id="pedidos" class="pagina">
+   <section id="pedidos" class="pagina admin-section">
      <h2>Pedidos Abiertos</h2>
      <div id="pedidos-contenido"></div>
    </section>
 
-   <section id="pedidos-enviados" class="pagina">
+   <section id="pedidos-enviados"class="pagina admin-section">
      <h2>Pedidos Enviados</h2>
      <div id="pedidos-enviados-contenido"></div>
    </section>
 
-   <section id="cupones" class="pagina">
+   <section id="cupones" class="pagina admin-section">
      <h2>Cupones</h2>
      <div id="cupones-contenido"></div>
    </section>
 
-   <section id="integraciones" class="pagina">
+   <section id="integraciones" class="pagina admin-section">
      <h2>Integraciones</h2>
      <div id="integraciones-contenido"></div>
    </section>
@@ -331,6 +1003,8 @@
     <section id="detalle-producto" class="pagina">
       <div class="cabecera-tienda-slider" id="cabecera-slider-detalle"></div>
       <div id="detalle-contenido"></div>
+      <div id="detalle-contenido"></div>
+      <div id="ressenyes-contenidor" style="max-width:800px; margin:2rem auto; padding:0 1rem;"></div>
     </section>
 
     <section id="quienes-somos" class="pagina">
@@ -367,117 +1041,18 @@
 
     <section id="envio-devoluciones" class="pagina">
       <h2>Envío y Devoluciones</h2>
-      <div class="content">
-        <h3>Política de Envío</h3>
-        <p>Realizamos envíos únicamente en España, incluyendo Península, Baleares y Canarias.
-           Los pedidos realizados antes de las 14:00 se preparan el mismo día, siempre que el producto esté disponible.
-           Algunos artículos necesitan ser fabricados y el plazo de producción es de 7 - 10 días laborables.
-           El plazo de entrega habitual es de 24-48 horas laborables (puede variar en Baleares y Canarias).</p>
-        
-        <h3>Costes de Envío</h3>
-        <ul>
-          <li>Envío estándar: 6,50 €</li>
-          <li>Envío gratis en pedidos superiores a 35,00 €</li>
-        </ul>
-        
-        <h3>Política de Devoluciones</h3>
-        <p>El cliente dispone de 14 días naturales desde la recepción del pedido para ejercer el derecho de desistimiento.<p>
-
-        <p>Productos de uso higiénico (pendientes):<br>
-           Los pendientes se envían avec precinto higiénico individual.
-           Por motivos de higiene y seguridad, no se aceptan devoluciones si el precinto está roto, abierto o manipulado.
-           Solo se aceptarán devoluciones de pendientes con el precinto completamente intacto.
-           Las devoluciones por defectos de fabricación se aceptan siempre, aunque el producto esté abierto.<p>
-        
-        <h3>Proceso de Devolución</h3>
-        <ol>
-          <li>Contacta con nuestro servicio de atención al cliente dentro del plazo de 14 días.</li>
-          <li>Te enviaremos las instrucciones y, si corresponde, una etiqueta de devolución.</li>
-          <li>El producto debe enviarse bien protegido y con el precinto higiénico sin abrir.</li>
-          <li>Una vez recibido y comprobado, el reembolso se efectuará en 5-7 días laborables.</li>
-        </ol>
-      </div>
+      <div class="content" id="content-envio"></div>
     </section>
 
     <section id="terminos-condiciones" class="pagina">
       <h2>Términos y Condiciones</h2>
-      <div class="content">
-        <h3>1. Aceptación de los Términos</h3>
-        <p>Al acceder a este sitio web y realizar un pedido, aceptas estos términos y condiciones. Si no estás de acuerdo, no debes utilizar la tienda ni realizar compras.</p>
-        
-        <h3>2. Información del Negocio</h3>
-        <p><strong>Miuart</strong><br>
-        Email: contacto@miuart.com<br>
-        La actividad consiste en la venta online de pendientes y otros productos artesanales.<p>
-        
-        <h3>3. Proceso de Compra</h3>
-        <p>Los precios incluyen IVA. Tras completar tu pedido, recibirás un email de confirmación. Podemos cancelar pedidos en caso de error evidente en el precio, falta de stock o indicios de fraude en el pago. En estos casos, el pedido no se procesará y no se realizará ningún cargo definitivo.</p>
-        
-        <h3>4. Disponibilidad y Producción</h3>
-        <p>Algunos artículos requieren fabricación manual con un plazo estimado de 7–10 días laborables. Si hubiera retrasos significativos, te lo notificaremos.</p>
-
-        <h3>5. Propiedad Intelectual</h3>
-        <p>Todos los contenidos del sitio (diseños, fotografías, textos y productos) son propiedad de Miuart y no pueden reproducirse ni utilizarse sin autorización expresa.</p>
-        
-        <h3>6. Responsabilidad</h3>
-        <p>No nos hacemos responsables de daños derivados de un uso incorrecto de los productos o de fallos temporales del sitio web por causas técnicas ajenas a nuestro control.</p>
-     
-        <h3>7. Protección de Datos</h3>
-        <p>Los datos personales se usan únicamente para gestionar pedidos y atención al cliente, cumpliendo la normativa vigente. No se ceden a terceros salvo obligación legal o necesidades logísticas.</p>
-
-        <h3>8. Ley Aplicable</h3>
-        <p>Estos términos se rigen por la legislación española. Cualquier conflicto se resolverá en los juzgados competentes del domicilio del consumidor.</p>
-      </div>
+      <div class="content" id="content-terminos"></div>
     </section>
 
     <section id="politica-privacidad" class="pagina">
-  <h2>Política de Privacidad</h2>
-  <div class="content">
-    <h3>1. Responsable del tratamiento</h3>
-    <p>El responsable del tratamiento de los datos personales recogidos en esta web es el titular de MiuArt, contactable a través de <a href="mailto:contacto@miuart.com">contacto@miuart.com</a>.</p>
-
-    <h3>2. Datos que recopilamos</h3>
-    <p>Recopilamos datos personales únicamente en los siguientes casos:</p>
-    <ul>
-      <li><strong>Pedidos:</strong> nombre, apellidos, dirección de envío, teléfono y email, necesarios para procesar y gestionar tu compra.</li>
-      <li><strong>Formulario de contacto:</strong> nombre y email, para poder responderte.</li>
-      <li><strong>Newsletter:</strong> email y nombre, únicamente si has dado tu consentimiento explícito marcando la casilla correspondiente al realizar tu pedido.</li>
-    </ul>
-
-    <h3>3. Finalidad del tratamiento</h3>
-    <p>Utilizamos tus datos para:</p>
-    <ul>
-      <li>Procesar, gestionar y enviar tus pedidos.</li>
-      <li>Comunicarnos contigo en relación a tu pedido o consulta.</li>
-      <li>Enviarte newsletters mensuales con novedades, si has dado tu consentimiento.</li>
-    </ul>
-
-    <h3>4. Proveedores y terceros</h3>
-    <p>Para el funcionamiento de la web utilizamos los siguientes servicios de terceros que pueden tratar datos:</p>
-    <ul>
-      <li><strong>Firebase (Google):</strong> plataforma donde se almacenan los datos de pedidos y configuración de la web.</li>
-      <li><strong>PayPal:</strong> plataforma de pago seguro. Los datos de pago son procesados directamente por PayPal y no son almacenados por MiuArt.</li>
-      <li><strong>Brevo:</strong> plataforma de email marketing utilizada para el envío de newsletters a los suscriptores.</li>
-    </ul>
-
-    <h3>5. Cookies</h3>
-    <p>Esta web utiliza cookies propias y de terceros. Puedes consultar y gestionar tus preferencias en cualquier momento haciendo clic en el enlace "Gestionar cookies" del pie de página.</p>
-    <ul>
-      <li><strong>Cookies necesarias:</strong> imprescindibles para el funcionamiento de la web, como el carrito de compra.</li>
-      <li><strong>Cookies analíticas:</strong> nos permiten conocer qué secciones de la web son más visitadas, de forma anónima.</li>
-      <li><strong>Cookies de terceros:</strong> utilizadas por PayPal para procesar pagos de forma segura.</li>
-    </ul>
-
-    <h3>6. Conservación de los datos</h3>
-    <p>Los datos de pedidos se conservan durante el tiempo necesario para cumplir con las obligaciones legales. Los datos de newsletter se conservan hasta que retires tu consentimiento.</p>
-
-    <h3>7. Tus derechos</h3>
-    <p>Tienes derecho a acceder, rectificar, suprimir, oponerte y limitar el tratamiento de tus datos personales, así como a retirar tu consentimiento para recibir newsletters en cualquier momento. Para ejercer estos derechos, contacta con nosotros en <a href="mailto:contacto@miuart.com">contacto@miuart.com</a>.</p>
-
-    <h3>8. Cambios en la política de privacidad</h3>
-    <p>Nos reservamos el derecho a actualizar esta política de privacidad. Te recomendamos revisarla periódicamente. La versión actualizada estará siempre disponible en esta página.</p>
-  </div>
-</section>
+      <h2>Política de Privacidad</h2>
+      <div class="content" id="content-privacidad"></div>
+    </section>
   </main>
 
   <footer>
@@ -490,13 +1065,7 @@
       <li><a href="#terminos-condiciones">Términos y condiciones</a></li>
       <li><a href="#politica-privacidad">Política de privacidad</a></li>
       <li><a href="#" id="gestionar-cookies-link">Gestionar cookies</a></li>
-      <li>
-        <a href="https://instagram.com/miuartshop" target="_blank" rel="noopener noreferrer" class="instagram-link">
-          <img src="https://res.cloudinary.com/dhfywi5e8/image/upload/v1763324613/logo_instagram_balu9l.jpg" alt="Instagram" class="instagram-logo">
-          Síguenos en Instagram
-        </a>
-      </li>
-    </ul>
+   </ul>
   </nav>
 
   <div id="cart-popup" class="cart-popup"></div>
@@ -522,14 +1091,14 @@
   </div>
 
   <script id="paypal-sdk"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
   <script type="module" src="app.js"></script>
 
 <!-- COOKIE BANNER -->
 <div id="cookie-banner">
   <div id="cookie-banner-text">
     <span>🍪</span>
-    <p>Usamos cookies propias y de terceros para mejorar tu experiencia de compra y analizar el tráfico de la web. Puedes aceptar todas las cookies o configurarlas según tus preferencias. <a href="#politica-privacidad" id="cookie-privacidad-link">Más información</a></p>
+    <p id="cookie-banner-p"></p>
   </div>
   <div id="cookie-banner-buttons">
     <button id="cookie-rechazar">Rechazar</button>
@@ -542,27 +1111,7 @@
 <div id="cookie-panel" style="display:none;">
   <div id="cookie-panel-inner">
     <h3>Configuración de cookies</h3>
-    <div class="cookie-option">
-      <div>
-        <strong>Cookies necesarias</strong>
-        <p>Imprescindibles para el funcionamiento de la web (carrito, login).</p>
-      </div>
-      <input type="checkbox" checked disabled>
-    </div>
-    <div class="cookie-option">
-      <div>
-        <strong>Cookies analíticas</strong>
-        <p>Nos permiten saber qué secciones visitan los usuarios.</p>
-      </div>
-      <input type="checkbox" id="cookie-check-analitica">
-    </div>
-    <div class="cookie-option">
-      <div>
-        <strong>Cookies de terceros</strong>
-        <p>Utilizadas por PayPal para procesar pagos de forma segura.</p>
-      </div>
-      <input type="checkbox" id="cookie-check-terceros">
-    </div>
+    <div id="cookie-categories-lista"></div>
     <div id="cookie-panel-buttons">
       <button id="cookie-panel-cancelar">Cancelar</button>
       <button id="cookie-panel-guardar">Guardar preferencias</button>
